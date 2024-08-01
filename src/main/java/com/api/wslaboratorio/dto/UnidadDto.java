@@ -1,7 +1,6 @@
 package com.api.wslaboratorio.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +19,7 @@ import java.io.Serializable;
 public class UnidadDto implements Serializable {
     private Long unidadId;
 
-    @NotNull(message = "El campo nombre no puede ser nulo.")
-    @NotBlank(message = "El campo nombre no puede ser vacío.")
+    @NotEmpty(message = "El campo nombre no puede estar vacío.")
     @Size(max = 30, message = "El campo nombre tiene como máximo 150 caracteres.")
     private String nombre;
 

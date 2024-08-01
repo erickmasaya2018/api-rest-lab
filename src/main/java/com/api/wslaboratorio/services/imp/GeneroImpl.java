@@ -1,10 +1,10 @@
 package com.api.wslaboratorio.services.imp;
 
-import com.api.wslaboratorio.dto.GrupoDto;
+import com.api.wslaboratorio.dto.GeneroDto;
 import com.api.wslaboratorio.entities.AuditoriaEntity;
-import com.api.wslaboratorio.entities.GrupoEntity;
-import com.api.wslaboratorio.repositories.IGrupoRepository;
-import com.api.wslaboratorio.services.IGrupoService;
+import com.api.wslaboratorio.entities.GeneroEntity;
+import com.api.wslaboratorio.repositories.IGeneroRepository;
+import com.api.wslaboratorio.services.IGeneroService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -17,29 +17,29 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class GrupoServiceImpl implements IGrupoService {
-
-    private final IGrupoRepository grupoRepository;
+public class GeneroImpl implements IGeneroService {
+    private final IGeneroRepository generoRepository;
     private final JwtService jwtService;
 
     @Override
-    public GrupoEntity crearGrupo(GrupoDto grupoDto, HttpServletRequest request) {
+    public GeneroEntity crearGenero(GeneroDto generoDto, HttpServletRequest request) {
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
                 .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
                 .fechaCreacion(new Date())
                 .build();
 
-        GrupoEntity grupoEntity = GrupoEntity.builder()
-                .nombre(grupoDto.getNombre())
-                .observacion(grupoDto.getObservacion())
+        GeneroEntity generoEntity = GeneroEntity.builder()
+                .descripcion(generoDto.getDescripcion())
+                .abreviatura(generoDto.getAbreviatura())
                 .auditoriaEntity(auditoria)
                 .build();
-        return grupoRepository.save(grupoEntity);
+        return generoRepository.save(generoEntity);
     }
 
     @Override
-    public GrupoEntity editarGrupo(Long id, GrupoDto grupoDto, HttpServletRequest request) {
-        Optional<GrupoEntity> findEntity = grupoRepository.findById(id);
+    public GeneroEntity editarGenero(Long id, GeneroDto generoDto, HttpServletRequest request) {
+        Optional<GeneroEntity> findEntity = generoRepository.findById(id);
+
         if (!findEntity.isPresent()) {
             return null;
         }
@@ -51,20 +51,19 @@ public class GrupoServiceImpl implements IGrupoService {
                 .fechaCreacion(new Date())
                 .build();
 
-        GrupoEntity grupoEntity = GrupoEntity.builder()
-                .grupoId(findEntity.get().getGrupoId())
-                .nombre(grupoDto.getNombre())
-                .observacion(grupoDto.getObservacion())
+        GeneroEntity generoEntity = GeneroEntity.builder()
+                .generoId(findEntity.get().getGeneroId())
+                .descripcion(generoDto.getDescripcion())
+                .abreviatura(generoDto.getAbreviatura())
                 .auditoriaEntity(auditoria)
                 .build();
 
-        return grupoRepository.save(grupoEntity);
+        return generoRepository.save(generoEntity);
     }
 
     @Override
-    public String eliminarGrupo(Long id) {
-
-        Optional<GrupoEntity> findEntity = Optional.ofNullable(grupoRepository
+    public String eliminarGenero(Long id) {
+        Optional<GeneroEntity> findEntity = Optional.ofNullable(generoRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
@@ -72,14 +71,14 @@ public class GrupoServiceImpl implements IGrupoService {
             return null;
         }
 
-        grupoRepository.delete(findEntity.get());
+        generoRepository.delete(findEntity.get());
         return "eliminado";
     }
 
     @Override
-    public Iterable<GrupoEntity> obtenerGrupoPorId(Long id) {
+    public Iterable<GeneroEntity> obtenerGeneroPorId(Long id) {
 
-        Optional<GrupoEntity> findEntity = Optional.ofNullable(grupoRepository
+        Optional<GeneroEntity> findEntity = Optional.ofNullable(generoRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
@@ -87,12 +86,11 @@ public class GrupoServiceImpl implements IGrupoService {
             return null;
         }
 
-        return (Iterable<GrupoEntity>) findEntity.get();
+        return (Iterable<GeneroEntity>) findEntity.get();
     }
 
     @Override
-    public Page<GrupoEntity> obtenerGrupos(Pageable pageable) {
-
-        return grupoRepository.findAll(pageable).map((element) -> element);
+    public Page<GeneroEntity> obtenerGeneros(Pageable pageable) {
+        return generoRepository.findAll(pageable).map((element) -> element);
     }
 }

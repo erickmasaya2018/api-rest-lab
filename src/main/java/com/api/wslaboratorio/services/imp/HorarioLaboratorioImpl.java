@@ -86,15 +86,15 @@ public class HorarioLaboratorioImpl implements IHorarioLaboratorioService {
     @Override
     public Iterable<HorarioLaborarioEntity> obtenerHorarioLaboratorioPorId(Long id) {
 
-        Optional<HorarioLaborarioEntity> findEmpresa = Optional.ofNullable(horarioLaboratorioRepository
+        Optional<HorarioLaborarioEntity> findEntity = Optional.ofNullable(horarioLaboratorioRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!findEmpresa.isPresent()) {
+        if (!findEntity.isPresent()) {
             return null;
         }
 
-        return (Iterable<HorarioLaborarioEntity>) findEmpresa.get();
+        return (Iterable<HorarioLaborarioEntity>) findEntity.get();
     }
 
     @Override

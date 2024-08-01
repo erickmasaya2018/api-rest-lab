@@ -89,15 +89,15 @@ public class LaboratorioServiceImpl implements ILaboratorioService {
     @Override
     public Iterable<LaboratorioEntity> obtenerLaboratorioPorId(Long id) {
 
-        Optional<LaboratorioEntity> findEmpresa = Optional.ofNullable(laboratorioRepository
+        Optional<LaboratorioEntity> findEntity = Optional.ofNullable(laboratorioRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!findEmpresa.isPresent()) {
+        if (!findEntity.isPresent()) {
             return null;
         }
 
-        return (Iterable<LaboratorioEntity>) findEmpresa.get();
+        return (Iterable<LaboratorioEntity>) findEntity.get();
     }
 
     @Override

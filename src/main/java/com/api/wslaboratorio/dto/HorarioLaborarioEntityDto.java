@@ -1,7 +1,7 @@
 package com.api.wslaboratorio.dto;
 
 import com.api.wslaboratorio.entities.LaboratorioEntity;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -22,8 +22,7 @@ import java.time.LocalTime;
 public class HorarioLaborarioEntityDto implements Serializable {
     private Long horarioLaboratorioId;
 
-    @NotNull(message = "El campo diaSemana no puede ser nulo.")
-    @NotBlank(message = "El campo diaSemana no puede ser vacío.")
+    @NotEmpty(message = "El campo diaSemana no puede estar vacío.")
     @Size(max = 30, message = "El campo nombre tiene como máximo 30 caracteres.")
     private String diaSemana;
 

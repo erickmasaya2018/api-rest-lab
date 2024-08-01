@@ -108,6 +108,4 @@ public class EmpleadoEntity {
     public void preUpdate() {
         this.auditoriaEntity.setFechaModificacion(new Date());
     }
-
-
 }

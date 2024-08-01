@@ -66,30 +66,30 @@ public class UnidadServiceImpl implements IUnidadService {
     @Override
     public String eliminarUnidad(Long id) {
 
-        Optional<UnidadEntity> usuarioOptional = Optional.ofNullable(unidadRepository
+        Optional<UnidadEntity> findEntity = Optional.ofNullable(unidadRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!usuarioOptional.isPresent()) {
+        if (!findEntity.isPresent()) {
             return null;
         }
 
-        unidadRepository.delete(usuarioOptional.get());
+        unidadRepository.delete(findEntity.get());
         return "eliminado";
     }
 
     @Override
     public Iterable<UnidadEntity> obtenerUnidadPorId(Long id) {
 
-        Optional<UnidadEntity> findUnidad = Optional.ofNullable(unidadRepository
+        Optional<UnidadEntity> findEntity = Optional.ofNullable(unidadRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!findUnidad.isPresent()) {
+        if (!findEntity.isPresent()) {
             return null;
         }
 
-        return (Iterable<UnidadEntity>) findUnidad.get();
+        return (Iterable<UnidadEntity>) findEntity.get();
     }
 
     @Override

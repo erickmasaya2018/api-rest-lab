@@ -77,29 +77,29 @@ public class EmpresaServiceImpl implements IEmpresaService {
 
     @Override
     public String eliminarEmpresa(Long id) {
-        Optional<EmpresaEntity> usuarioOptional = Optional.ofNullable(empresaRepository
+        Optional<EmpresaEntity> findEntity = Optional.ofNullable(empresaRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!usuarioOptional.isPresent()) {
+        if (!findEntity.isPresent()) {
             return null;
         }
 
-        empresaRepository.delete(usuarioOptional.get());
+        empresaRepository.delete(findEntity.get());
         return "eliminado";
     }
 
     @Override
     public Iterable<EmpresaEntity> obtenerEmpresaPorId(Long id) {
-        Optional<EmpresaEntity> findEmpresa = Optional.ofNullable(empresaRepository
+        Optional<EmpresaEntity> findEntity = Optional.ofNullable(empresaRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!findEmpresa.isPresent()) {
+        if (!findEntity.isPresent()) {
             return null;
         }
 
-        return (Iterable<EmpresaEntity>) findEmpresa.get();
+        return (Iterable<EmpresaEntity>) findEntity.get();
     }
 
     @Override

@@ -1,10 +1,13 @@
 package com.api.wslaboratorio.dto;
 
 import com.api.wslaboratorio.entities.GrupoEntity;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -19,8 +22,7 @@ import java.util.Set;
 public class PaqueteDto implements Serializable {
     private Long analisisId;
 
-    @NotNull(message = "El campo nombre no puede ser nulo.")
-    @NotBlank(message = "El campo nombre no puede ser vacío.")
+    @NotEmpty(message = "El campo nombre no puede estar vacío.")
     @Size(max = 30, message = "El campo nombre tiene como máximo 30 caracteres.")
     private String nombre;
 
@@ -28,8 +30,8 @@ public class PaqueteDto implements Serializable {
     private String observacion;
 
     @NotNull(message = "El campo porcentaje no puede ser nulo.")
-    @NotBlank(message = "El campo porcentaje no puede ser vacío.")
     private Double porcentaje;
 
+    @NotNull(message = "El campo grupos no puede ser nulo.")
     private Set<GrupoEntity> grupos;
 }

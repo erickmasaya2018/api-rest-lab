@@ -81,29 +81,29 @@ public class PacienteImpl implements IPacienteService {
     @Override
     public String eliminarPaciente(Long id) {
 
-        Optional<PacienteEntity> usuarioOptional = Optional.ofNullable(pacienteRepository
+        Optional<PacienteEntity> findEntity = Optional.ofNullable(pacienteRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!usuarioOptional.isPresent()) {
+        if (!findEntity.isPresent()) {
             return null;
         }
 
-        pacienteRepository.delete(usuarioOptional.get());
+        pacienteRepository.delete(findEntity.get());
         return "eliminado";
     }
 
     @Override
     public Iterable<PacienteEntity> obtenerPacientePorId(Long id) {
-        Optional<PacienteEntity> paciente = Optional.ofNullable(pacienteRepository
+        Optional<PacienteEntity> findEntity = Optional.ofNullable(pacienteRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!paciente.isPresent()) {
+        if (!findEntity.isPresent()) {
             return null;
         }
 
-        return (Iterable<PacienteEntity>) paciente.get();
+        return (Iterable<PacienteEntity>) findEntity.get();
     }
 
     @Override

@@ -21,14 +21,12 @@ public class UsuarioEntityINDto {
 
     private Long usuarioId;
 
-    @NotNull(message = "El campo nombre usuario es requerido, no puede estar em nulo.")
-    @NotBlank(message = "El campo nombre usuario es requerido, no puede estar eb vació.")
+    @NotEmpty(message = "El campo nombre usuario no puede estar vacío.")
     @Size(min = 6, message = "El campo requiere como mínimo 8 caracteres.")
     @Size(max = 30, message = "El campo requiere como máximo 20 caracteres.")
     private String nombreUsuario;
 
-    @NotNull(message = "El campo contraseña es requerido, no puede estar em nulo.")
-    @NotBlank(message = "El campo contraseña es requerido, no puede estar eb vació.")
+    @NotEmpty(message = "El campo contraseña no puede estar vacío.")
     @Size(min = 8, message = "El campo requiere como mínimo 8 caracteres.")
     @Size(max = 20, message = "El campo requiere como máximo 20 caracteres.")
     private String contrasena;

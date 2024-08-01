@@ -98,29 +98,29 @@ public class PaqueteServiceImpl implements IPaqueteService {
 
     @Override
     public String eliminarPaquete(Long id) {
-        Optional<PaqueteEntity> usuarioOptional = Optional.ofNullable(paqueteRepository
+        Optional<PaqueteEntity> findEntity = Optional.ofNullable(paqueteRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!usuarioOptional.isPresent()) {
+        if (!findEntity.isPresent()) {
             return null;
         }
 
-        paqueteRepository.delete(usuarioOptional.get());
+        paqueteRepository.delete(findEntity.get());
         return "eliminado";
     }
 
     @Override
     public Iterable<PaqueteEntity> obtenerPaquetePorId(Long id) {
-        Optional<PaqueteEntity> paquete = Optional.ofNullable(paqueteRepository
+        Optional<PaqueteEntity> findEntity = Optional.ofNullable(paqueteRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!paquete.isPresent()) {
+        if (!findEntity.isPresent()) {
             return null;
         }
 
-        return (Iterable<PaqueteEntity>) paquete.get();
+        return (Iterable<PaqueteEntity>) findEntity.get();
     }
 
     @Override
