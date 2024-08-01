@@ -3,6 +3,7 @@ package com.api.wslaboratorio.services;
 import com.api.wslaboratorio.dto.UsuarioEntityINDto;
 import com.api.wslaboratorio.dto.UsuarioEntityOUTDto;
 import com.api.wslaboratorio.entities.UsuarioEntity;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 public interface IUsuarioService {
-    ResponseEntity<UsuarioEntityOUTDto> crearUsuario(UsuarioEntityINDto usuarioEntityINDto);
+    ResponseEntity<UsuarioEntityOUTDto> crearUsuario(UsuarioEntityINDto usuarioEntityINDto, HttpServletRequest request) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException;
 
-    ResponseEntity<UsuarioEntityOUTDto> editarUsuario(Long id, UsuarioEntityINDto usuarioEntityINDto);
+    ResponseEntity<UsuarioEntityOUTDto> editarUsuario(Long id, UsuarioEntityINDto usuarioEntityINDto, HttpServletRequest request) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException;
 
     ResponseEntity<UsuarioEntityOUTDto> eliminarUsuario(Long id);
 

@@ -36,7 +36,7 @@ public class CitaEntity {
             )
     @Column(name = "citaid")
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
-    private Integer citaId;
+    private Long citaId;
 
     @Embedded
     private AuditoriaEntity auditoriaEntity;

@@ -2,8 +2,6 @@ package com.api.wslaboratorio.services;
 
 import com.api.wslaboratorio.dto.LoginUserDto;
 import com.api.wslaboratorio.entities.UsuarioEntity;
-import com.api.wslaboratorio.repositories.IUsuarioRepository;
-import com.api.wslaboratorio.services.imp.UsuarioServiceImp;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

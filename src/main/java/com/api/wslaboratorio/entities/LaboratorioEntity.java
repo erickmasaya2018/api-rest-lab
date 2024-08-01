@@ -70,6 +70,10 @@ public class LaboratorioEntity {
 
     @OneToMany(mappedBy = "laboratorioEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<CitaEntity> citaEntities = new HashSet<>();
+
+    @OneToMany(mappedBy = "laboratorioEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<HorarioLaborarioEntity> horarioLaborarioEntities = new HashSet<>();
+
     @PrePersist
     public void prePersist() {
         this.auditoriaEntity.setFechaCreacion(new Date());

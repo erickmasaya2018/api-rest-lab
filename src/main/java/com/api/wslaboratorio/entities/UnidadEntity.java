@@ -1,6 +1,5 @@
 package com.api.wslaboratorio.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -17,41 +18,40 @@ import java.util.Date;
 @Builder
 @Table
         (
-                name = "tt_resultado"
+                name = "tc_unidad"
+
         )
-public class ResultadoEntity {
+public class UnidadEntity {
+
     @Id
     @SequenceGenerator
             (
-                    name = "resultado_sec",
-                    sequenceName = "resultado_sec",
+                    name = "unidad_sec",
+                    sequenceName = "unidad_sec",
                     allocationSize = 1
             )
     @GeneratedValue
             (
-                    generator = "resultado_sec",
+                    generator = "unidad_sec",
                     strategy = GenerationType.SEQUENCE
             )
-    @Column(name = "resultadoid")
+    @Column(name = "unidadid")
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
-    private Long resultadoId;
+    private Long unidadId;
 
-    @Column(name = "prosa_resultado", nullable = false, length = 30)
-    @Comment("CAMPO QUE ALMACENA EL RESULTADO DEL ANALISIS REALIZADO AL PACIENTE SEGÚN LA CITA.")
-    private String prosaResultado;
+    @Column(name = "nombre", nullable = false, length = 30)
+    @Comment("CAMPO PARA ALMACENAR EL NOMBRE DE LA UNIDAD.")
+    private String nombre;
+
+    @Column(name = "observacion", nullable = true, length = 150)
+    @Comment("CAMPO PARA ALMACENAR LA OBSERVACIÓN DE LA UNIDAD.")
+    private String observacion;
 
     @Embedded
     private AuditoriaEntity auditoriaEntity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "analisisid")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private AnalisisEntity analisisEntity;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "citaid")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private CitaEntity citaEntity;
+    @OneToMany(mappedBy = "unidadEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<AnalisisEntity> analisisEntities = new HashSet<>();
 
     @PrePersist
     public void prePersist() {
@@ -62,5 +62,4 @@ public class ResultadoEntity {
     public void preUpdate() {
         this.auditoriaEntity.setFechaModificacion(new Date());
     }
-
 }

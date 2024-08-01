@@ -1,10 +1,9 @@
 package com.api.wslaboratorio.dto;
 
-import com.api.wslaboratorio.entities.EmpleadoEntity;
-import com.api.wslaboratorio.entities.PacienteEntity;
-import com.api.wslaboratorio.util.Rol;
-import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * DTO for {@link com.api.wslaboratorio.entities.UsuarioEntity}

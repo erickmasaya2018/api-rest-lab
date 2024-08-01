@@ -38,39 +38,39 @@ public class PacienteEntity {
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private Long pacienteId;
 
-    @Column(name = "dni")
+    @Column(name = "dni", nullable = false, length = 20)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String dni;
 
-    @Column(name = "primer_nombre")
+    @Column(name = "primer_nombre", nullable = false, length = 20)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String primerNombre;
 
-    @Column(name = "segundo_nombre")
+    @Column(name = "segundo_nombre", nullable = true, length = 20)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String segundoNombre;
 
-    @Column(name = "tercer_nombre")
+    @Column(name = "tercer_nombre", nullable = true, length = 20)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String tercerNombre;
 
-    @Column(name = "primer_apellido")
+    @Column(name = "primer_apellido", nullable = false, length = 20)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String primerApellido;
 
-    @Column(name = "segundo_apellido")
+    @Column(name = "segundo_apellido", nullable = true, length = 20)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String segundoApellido;
 
-    @Column(name = "direccion")
+    @Column(name = "direccion", nullable = false, length = 150)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String direccion;
 
-    @Column(name = "ciudad")
+    @Column(name = "ciudad", nullable = false, length = 20)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String ciudad;
 
-    @Column(name = "telefono")
+    @Column(name = "telefono", nullable = true, length = 20)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String telefono;
 

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.time.LocalTime;
 import java.util.Date;
 
 @Entity
@@ -17,41 +18,48 @@ import java.util.Date;
 @Builder
 @Table
         (
-                name = "tt_resultado"
+                name = "tt_horario_laboratorio"
         )
-public class ResultadoEntity {
+public class HorarioLaborarioEntity {
     @Id
     @SequenceGenerator
             (
-                    name = "resultado_sec",
-                    sequenceName = "resultado_sec",
+                    name = "horario_laboratorio_sec",
+                    sequenceName = "horario_laboratorio_sec",
                     allocationSize = 1
             )
     @GeneratedValue
             (
-                    generator = "resultado_sec",
+                    generator = "horario_laboratorio_sec",
                     strategy = GenerationType.SEQUENCE
             )
-    @Column(name = "resultadoid")
+    @Column(name = "horarioLaboratorioid")
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
-    private Long resultadoId;
+    private Long horarioLaboratorioId;
 
-    @Column(name = "prosa_resultado", nullable = false, length = 30)
-    @Comment("CAMPO QUE ALMACENA EL RESULTADO DEL ANALISIS REALIZADO AL PACIENTE SEGÚN LA CITA.")
-    private String prosaResultado;
+    @Column(name = "dia_semana", nullable = false, length = 20)
+    @Comment("DÍA DE LA SEMANA.")
+    private String diaSemana;
+
+    @Column(name = "abierto", nullable = false)
+    @Comment("VALIDAR SI ESTA ABIERTO.")
+    private int abierto;
+
+    @Column(name = "hora_abre", nullable = false)
+    @Temporal(TemporalType.TIME)
+    private LocalTime horaAbre;
+
+    @Column(name = "hora_cierre", nullable = false)
+    @Temporal(TemporalType.TIME)
+    private LocalTime horaCierra;
 
     @Embedded
     private AuditoriaEntity auditoriaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "analisisid")
+    @JoinColumn(name = "laboratorioid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private AnalisisEntity analisisEntity;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "citaid")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private CitaEntity citaEntity;
+    private LaboratorioEntity laboratorioEntity;
 
     @PrePersist
     public void prePersist() {
@@ -62,5 +70,4 @@ public class ResultadoEntity {
     public void preUpdate() {
         this.auditoriaEntity.setFechaModificacion(new Date());
     }
-
 }

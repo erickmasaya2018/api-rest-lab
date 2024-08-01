@@ -1,5 +1,6 @@
 package com.api.wslaboratorio.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,8 +46,27 @@ public class AnalisisEntity {
     @Comment("CAMPO PARA ALMACENAR EL PRECIO DEL ANALISIS.")
     private Double precio;
 
+    @Column(name = "minimo", nullable = false)
+    @Comment("CAMPO PARA ALMACENAR EL VALOR MINIMO QUE SE MARCAR COMO CORRECTO DEL ANALISIS.")
+    private Double minimo;
+
+
+    @Column(name = "maximo", nullable = false)
+    @Comment("CAMPO PARA ALMACENAR EL VALOR MAXIMO QUE SE MARCAR COMO CORRECTO DEL ANALISIS.")
+    private Double maximo;
+
     @Embedded
     private AuditoriaEntity auditoriaEntity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unidadid")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private UnidadEntity unidadEntity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "grupoid")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private GrupoEntity grupoEntity;
 
     @OneToMany(mappedBy = "analisisEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<ResultadoEntity> resultadoEntities = new HashSet<>();

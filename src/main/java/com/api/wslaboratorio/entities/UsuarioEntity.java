@@ -1,21 +1,20 @@
 package com.api.wslaboratorio.entities;
 
-import com.api.wslaboratorio.util.Rol;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -68,10 +67,6 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "clave_secreta_contrasena", nullable = false, length = 100)
     @Comment("CAMPO QUE ALMACENA LA CLAVE SECRETA PARA DESENCRIPTAR EL CONTENIDO CIFRADO DEL LA CONTRASEÑA.")
     private String claveSecretaContrasena;
-
-    @Column(name = "clave_secreta_nombre_usuario", nullable = false, length = 100)
-    @Comment("CAMPO QUE ALMACENA LA CLAVE SECRETA PARA DESENCRIPTAR EL CONTENIDO CIFRADO DEL NOMBRE DEL USUARIO.")
-    private String claveSecretaNombreUsuario;
 
     @Embedded
     private AuditoriaEntity auditoriaEntity;

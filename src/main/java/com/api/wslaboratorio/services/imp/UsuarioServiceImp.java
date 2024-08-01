@@ -1,11 +1,15 @@
 package com.api.wslaboratorio.services.imp;
 
+import com.api.wslaboratorio.dto.EncriptadoDto;
 import com.api.wslaboratorio.dto.UsuarioEntityINDto;
 import com.api.wslaboratorio.dto.UsuarioEntityOUTDto;
+import com.api.wslaboratorio.entities.AuditoriaEntity;
 import com.api.wslaboratorio.entities.UsuarioEntity;
 import com.api.wslaboratorio.repositories.IUsuarioRepository;
 import com.api.wslaboratorio.services.IEncryptingService;
 import com.api.wslaboratorio.services.IUsuarioService;
+import com.api.wslaboratorio.services.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +24,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.net.URI;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -29,21 +34,34 @@ public class UsuarioServiceImp implements IUsuarioService {
     private final IUsuarioRepository usuarioRepository;
     private final ModelMapper modelMapper;
 
-    public UsuarioServiceImp(PasswordEncoder passwordEncoder, IEncryptingService encryptingService, IUsuarioRepository usuarioRepository, ModelMapper modelMapper) {
+    private final JwtService jwtService;
+
+    public UsuarioServiceImp(PasswordEncoder passwordEncoder, IEncryptingService encryptingService, IUsuarioRepository usuarioRepository, ModelMapper modelMapper, JwtService jwtService) {
         this.passwordEncoder = passwordEncoder;
         this.encryptingService = encryptingService;
         this.usuarioRepository = usuarioRepository;
         this.modelMapper = modelMapper;
+        this.jwtService = jwtService;
     }
 
     @Override
-    public ResponseEntity<UsuarioEntityOUTDto> crearUsuario(UsuarioEntityINDto usuarioEntityINDto) {
+    public ResponseEntity<UsuarioEntityOUTDto> crearUsuario(UsuarioEntityINDto usuarioEntityINDto, HttpServletRequest request) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+
+        EncriptadoDto encriptadoDto = encryptingService.encriptarTexto(usuarioEntityINDto.getContrasena());
+
+        AuditoriaEntity auditoriaEntity = AuditoriaEntity.builder()
+                .fechaCreacion(new Date())
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .build();
+
         UsuarioEntity usuarioEntity = UsuarioEntity.builder()
                 .nombreUsuario(usuarioEntityINDto.getNombreUsuario())
-                .contrasena(usuarioEntityINDto.getContrasena())
+                .contrasena(encriptadoDto.getCadenEncriptada())
+                .claveSecretaContrasena(encriptadoDto.getClaveSecreta())
                 .email(usuarioEntityINDto.getEmail())
                 .empleadoEntity(usuarioEntityINDto.getEmpleadoEntity())
                 .pacienteEntity(usuarioEntityINDto.getPacienteEntity())
+                .auditoriaEntity(auditoriaEntity)
                 .build();
         UsuarioEntity usuarioGuardado = usuarioRepository.save(usuarioEntity);
         URI ubicacion = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
@@ -54,7 +72,9 @@ public class UsuarioServiceImp implements IUsuarioService {
     }
 
     @Override
-    public ResponseEntity<UsuarioEntityOUTDto> editarUsuario(Long id, UsuarioEntityINDto usuarioEntityINDto) {
+    public ResponseEntity<UsuarioEntityOUTDto> editarUsuario(Long id, UsuarioEntityINDto usuarioEntityINDto, HttpServletRequest request) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        EncriptadoDto encriptadoDto = encryptingService.encriptarTexto(usuarioEntityINDto.getContrasena());
+
         Optional<UsuarioEntity> usuarioOptional = Optional.ofNullable(usuarioRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
@@ -62,12 +82,23 @@ public class UsuarioServiceImp implements IUsuarioService {
 
             return ResponseEntity.unprocessableEntity().build();
         }
+
+        AuditoriaEntity auditoriaEntity = AuditoriaEntity.builder()
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .fechaModificacion(new Date())
+                .usuarioCreacion(usuarioOptional.get().getAuditoriaEntity().getUsuarioCreacion())
+                .fechaCreacion(new Date())
+                .build();
+
+
         usuarioEntityINDto.setUsuarioId(usuarioOptional.get().getUsuarioId());
         UsuarioEntity usuarioEntity = UsuarioEntity.builder()
                 .usuarioId(usuarioEntityINDto.getUsuarioId())
                 .nombreUsuario(usuarioEntityINDto.getNombreUsuario())
-                .contrasena(usuarioEntityINDto.getContrasena())
+                .contrasena(encriptadoDto.getCadenEncriptada())
+                .claveSecretaContrasena(encriptadoDto.getClaveSecreta())
                 .email(usuarioEntityINDto.getEmail())
+                .auditoriaEntity(auditoriaEntity)
                 .empleadoEntity(usuarioEntityINDto.getEmpleadoEntity())
                 .pacienteEntity(usuarioEntityINDto.getPacienteEntity())
                 .build();

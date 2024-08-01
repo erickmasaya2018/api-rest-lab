@@ -33,7 +33,7 @@ public class SecurityConfiguration {
         }).cors((cors) -> {
             cors.configurationSource(corsConfigurationSource());
         }).authorizeHttpRequests((HttpRequests) -> {
-            ((AuthorizeHttpRequestsConfigurer.AuthorizedUrl) ((AuthorizeHttpRequestsConfigurer.AuthorizedUrl) ((AuthorizeHttpRequestsConfigurer.AuthorizedUrl) HttpRequests.requestMatchers(new String[]{"api/V1/auth/**"})).permitAll().requestMatchers(new String[]{"/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"})).permitAll().anyRequest()).authenticated();
+            ((AuthorizeHttpRequestsConfigurer.AuthorizedUrl) ((AuthorizeHttpRequestsConfigurer.AuthorizedUrl) ((AuthorizeHttpRequestsConfigurer.AuthorizedUrl) HttpRequests.requestMatchers(new String[]{"wslaboratorio/api/V1/usuario/login"})).permitAll().requestMatchers(new String[]{"/swagger-ui/login", "/v3/api-docs/**", "/swagger-ui/**", "/v2/api-docs/**", "/swagger-resources/**", "/swagger-ui.html"})).permitAll().anyRequest()).authenticated();
         }).sessionManagement((session) -> {
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         }).authenticationProvider(this.authenticationProvider).addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
