@@ -20,7 +20,7 @@ import java.net.URI;
 @Tag(name = "grupo", description = "Controlador para gestionar la entidad de grupo.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base}/api/${api.version}/grupo")
+@RequestMapping("/${api.path}/grupo")
 public class GrupoController {
 
     private final IGrupoService grupoService;

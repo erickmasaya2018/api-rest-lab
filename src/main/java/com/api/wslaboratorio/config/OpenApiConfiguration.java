@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         servers = {@Server(
-                url = "/wslaboratorio",
+                url = "/api",
                 description = "Servidor Aplicación Laboratorio"
         )},
         info = @Info(

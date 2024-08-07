@@ -38,7 +38,7 @@ public class EstadoEntity {
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private Long estadoId;
 
-    @Column(name = "descripcion", nullable = true, length = 30)
+    @Column(name = "descripcion", nullable = false, length = 30)
     @Comment("CAMPO QUE ALMACENA LA DESCRIPCION DEL ITEM QUE ES PARTE DEL CATALOGO.")
     private String descripcion;
 

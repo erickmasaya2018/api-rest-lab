@@ -21,7 +21,7 @@ import java.net.URI;
 @Tag(name = "paciente", description = "Controlador para gestionar la entidad de paciente.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base}/api/${api.version}/paciente")
+@RequestMapping("/${api.path}/paciente")
 public class PacienteController {
 
     private final IPacienteService pacienteService;

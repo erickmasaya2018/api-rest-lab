@@ -21,7 +21,7 @@ import java.net.URI;
 @Tag(name = "paquete", description = "Controlador para gestionar la entidad de paquete.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base}/api/${api.version}/paquete")
+@RequestMapping("/${api.path}/paquete")
 public class PaqueteController {
 
     private final IPaqueteService paqueteService;

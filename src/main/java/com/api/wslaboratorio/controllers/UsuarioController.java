@@ -26,7 +26,7 @@ import java.security.NoSuchAlgorithmException;
 
 @Tag(name = "usuario", description = "Controlador para gestionar los usuarios de la aplicación.")
 @RestController
-@RequestMapping("${api.base}/api/${api.version}/usuario")
+@RequestMapping("/${api.path}/usuario")
 public class UsuarioController {
 
     private final UsuarioServiceImp usuarioServiceImp;

@@ -20,7 +20,7 @@ import java.net.URI;
 @Tag(name = "unidad", description = "Controlador para gestionar la entidad de unidad.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base}/api/${api.version}/unidad")
+@RequestMapping("/${api.path}/unidad")
 public class UnidadController {
 
     private final IUnidadService unidadService;

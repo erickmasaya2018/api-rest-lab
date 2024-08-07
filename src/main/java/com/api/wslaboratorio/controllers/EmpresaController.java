@@ -20,7 +20,7 @@ import java.net.URI;
 @Tag(name = "empresa", description = "Controlador para gestionar la entidad de empresa.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base}/api/${api.version}/empresa")
+@RequestMapping("/${api.path}/empresa")
 public class EmpresaController {
 
     private final IEmpresaService empresaService;

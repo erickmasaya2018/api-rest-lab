@@ -20,7 +20,7 @@ import java.net.URI;
 @Tag(name = "horario-laboratorio", description = "Controlador para gestionar el horario de atención de un laboratorio.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base}/api/${api.version}/horariolaboratorio")
+@RequestMapping("/${api.path}/horariolaboratorio")
 public class HorarioLaboratorioController {
 
     private final IHorarioLaboratorioService horarioLaboratorioService;

@@ -20,7 +20,7 @@ import java.net.URI;
 @Tag(name = "laboratorio", description = "Controlador para gestionar la entidad de laboratorio.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base}/api/${api.version}/laboratorio")
+@RequestMapping("/${api.path}/laboratorio")
 public class LaboratorioController {
 
     private final ILaboratorioService laboratorioService;

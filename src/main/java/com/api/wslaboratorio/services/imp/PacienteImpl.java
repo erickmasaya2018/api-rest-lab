@@ -3,7 +3,9 @@ package com.api.wslaboratorio.services.imp;
 import com.api.wslaboratorio.dto.PacienteDto;
 import com.api.wslaboratorio.dto.custom.PacienteCustomDto;
 import com.api.wslaboratorio.entities.AuditoriaEntity;
+import com.api.wslaboratorio.entities.GeneroEntity;
 import com.api.wslaboratorio.entities.PacienteEntity;
+import com.api.wslaboratorio.repositories.IGeneroRepository;
 import com.api.wslaboratorio.repositories.IPacienteRepository;
 import com.api.wslaboratorio.services.IPacienteService;
 import com.api.wslaboratorio.services.JwtService;
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class PacienteImpl implements IPacienteService {
 
     private final IPacienteRepository pacienteRepository;
+    private final IGeneroRepository generoRepository;
     private final JwtService jwtService;
 
     @Override
@@ -29,6 +32,9 @@ public class PacienteImpl implements IPacienteService {
                 .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
                 .fechaCreacion(new Date())
                 .build();
+
+        GeneroEntity findEntity = generoRepository.findById(pacienteDto.getGeneroEntity().getGeneroId())
+                .orElseThrow(() -> new RuntimeException("No se encontró la entidad con el id: " + pacienteDto.getGeneroEntity().getGeneroId()));
 
         PacienteEntity pacienteEntity = PacienteEntity.builder()
                 .dni(pacienteDto.getDni())
@@ -40,7 +46,7 @@ public class PacienteImpl implements IPacienteService {
                 .direccion(pacienteDto.getDireccion())
                 .ciudad(pacienteDto.getCiudad())
                 .telefono(pacienteDto.getTelefono())
-                .generoEntity(pacienteDto.getGeneroEntity())
+                .generoEntity(findEntity)
                 .auditoriaEntity(auditoria)
                 .build();
 
@@ -61,6 +67,10 @@ public class PacienteImpl implements IPacienteService {
                 .fechaCreacion(new Date())
                 .build();
 
+        GeneroEntity generoEntity = generoRepository.findById(pacienteDto.getGeneroEntity().getGeneroId())
+                .orElseThrow(() -> new RuntimeException("No se encontró la entidad con el id: " + pacienteDto.getGeneroEntity().getGeneroId()));
+
+
         PacienteEntity pacienteEntity = PacienteEntity.builder()
                 .dni(pacienteDto.getDni())
                 .primerNombre(pacienteDto.getPrimerNombre())
@@ -71,7 +81,7 @@ public class PacienteImpl implements IPacienteService {
                 .direccion(pacienteDto.getDireccion())
                 .ciudad(pacienteDto.getCiudad())
                 .telefono(pacienteDto.getTelefono())
-                .generoEntity(pacienteDto.getGeneroEntity())
+                .generoEntity(generoEntity)
                 .auditoriaEntity(auditoria)
                 .build();
 

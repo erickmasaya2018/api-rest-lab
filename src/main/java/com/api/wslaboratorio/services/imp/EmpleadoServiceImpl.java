@@ -130,6 +130,6 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
 
     @Override
     public Page<EmpleadoEntity> obtenerEmpleados(Pageable pageable) {
-        return null;
+        return empleadoRepository.findAll(pageable).map((element) -> element);
     }
 }
