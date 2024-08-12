@@ -1,9 +1,9 @@
 package com.api.wslaboratorio.dto;
 
-import com.api.wslaboratorio.entities.EmpleadoEntity;
-import com.api.wslaboratorio.entities.PacienteEntity;
-import com.api.wslaboratorio.util.Rol;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,15 +22,7 @@ public class UsuarioEntityINDto {
     private Long usuarioId;
 
     @NotEmpty(message = "El campo nombre usuario no puede estar vacío.")
-    @Size(min = 6, message = "El campo requiere como mínimo 8 caracteres.")
-    @Size(max = 30, message = "El campo requiere como máximo 20 caracteres.")
-    private String nombreUsuario;
-
-    @NotEmpty(message = "El campo contraseña no puede estar vacío.")
-    @Size(min = 8, message = "El campo requiere como mínimo 8 caracteres.")
-    @Size(max = 20, message = "El campo requiere como máximo 20 caracteres.")
-    private String contrasena;
-
+    @Size(max = 30, message = "El campo requiere como máximo 30 caracteres.")
     @Email(
             regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
             flags = Pattern.Flag.CASE_INSENSITIVE,
@@ -38,10 +30,17 @@ public class UsuarioEntityINDto {
     )
     private String email;
 
-    private Rol rol;
+    @NotEmpty(message = "El campo contraseña no puede estar vacío.")
+    @Size(min = 8, message = "El campo requiere como mínimo 8 caracteres.")
+    @Size(max = 20, message = "El campo requiere como máximo 20 caracteres.")
+    private String contrasena;
 
-    private EmpleadoEntity empleadoEntity;
+    @NotEmpty(message = "El campo permiso no puede estar vacío.")
+    @Size(max = 10, message = "El campo requiere como máximo 10 caracteres.")
+    private String permiso;
 
-    private PacienteEntity pacienteEntity;
+    private EmpleadoDto empleadoEntity;
+
+    private PacienteDto pacienteEntity;
 
 }

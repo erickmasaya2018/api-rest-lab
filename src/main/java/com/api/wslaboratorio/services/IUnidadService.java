@@ -3,8 +3,8 @@ package com.api.wslaboratorio.services;
 import com.api.wslaboratorio.dto.UnidadDto;
 import com.api.wslaboratorio.entities.UnidadEntity;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface IUnidadService {
     UnidadEntity crearUnidad(UnidadDto unidadDto, HttpServletRequest request);
@@ -13,8 +13,8 @@ public interface IUnidadService {
 
     String eliminarUnidad(Long id);
 
-    Iterable<UnidadEntity> obtenerUnidadPorId(Long id);
+    UnidadEntity obtenerUnidadPorId(Long id);
 
-    Page<UnidadEntity> obtenerUnidades(Pageable pageable);
+    List<UnidadEntity> obtenerUnidades();
 
 }

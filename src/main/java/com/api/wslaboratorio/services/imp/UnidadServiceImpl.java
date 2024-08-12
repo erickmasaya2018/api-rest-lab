@@ -8,11 +8,10 @@ import com.api.wslaboratorio.services.IUnidadService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,7 +24,7 @@ public class UnidadServiceImpl implements IUnidadService {
     public UnidadEntity crearUnidad(UnidadDto unidadDto, HttpServletRequest request) {
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
@@ -47,7 +46,7 @@ public class UnidadServiceImpl implements IUnidadService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
@@ -70,31 +69,21 @@ public class UnidadServiceImpl implements IUnidadService {
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        unidadRepository.delete(findEntity.get());
+        unidadRepository.deleteUnidadById(id);
         return "eliminado";
     }
 
     @Override
-    public Iterable<UnidadEntity> obtenerUnidadPorId(Long id) {
+    public UnidadEntity obtenerUnidadPorId(Long id) {
 
-        Optional<UnidadEntity> findEntity = Optional.ofNullable(unidadRepository
+        return unidadRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<UnidadEntity>) findEntity.get();
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún unidad con id: " + id));
     }
 
     @Override
-    public Page<UnidadEntity> obtenerUnidades(Pageable pageable) {
-        return unidadRepository.findAll(pageable).map((element) -> element);
+    public List<UnidadEntity> obtenerUnidades() {
+        return unidadRepository.findAll();
 
     }
 }

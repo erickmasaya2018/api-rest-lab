@@ -9,11 +9,10 @@ import com.api.wslaboratorio.services.IAnalisisService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,21 +27,22 @@ public class AnalisisServiceImpl implements IAnalisisService {
     @Override
     public AnalisisEntity crearAnalisis(AnalisisDto analisisDto, HttpServletRequest request) {
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
-        UnidadEntity findUnidadEntity = unidadRepository.findById(analisisDto.getUnidadEntity().getUnidadId())
-                .orElseThrow(() -> new RuntimeException("No se encontró a ninguna empresa con id: " + analisisDto.getUnidadEntity().getUnidadId()));
+        UnidadEntity findUnidadEntity = unidadRepository.findById(analisisDto.getUnidad().getUnidadId())
+                .orElseThrow(() -> new RuntimeException("No se encontró a ninguna unidad con id: " + analisisDto.getUnidad().getUnidadId()));
 
-        GrupoEntity findGrupoEntity = grupoRepository.findById(analisisDto.getGrupoEntity().getGrupoId())
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún genero con id: " + analisisDto.getGrupoEntity().getGrupoId()));
+        GrupoEntity findGrupoEntity = grupoRepository.findById(analisisDto.getGrupo().getGrupoId())
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún genero con id: " + analisisDto.getGrupo().getGrupoId()));
 
         AnalisisEntity analisisNuevo = AnalisisEntity.builder()
                 .nombre(analisisDto.getNombre())
                 .precio(analisisDto.getPrecio())
                 .maximo(analisisDto.getMaximo())
                 .minimo(analisisDto.getMinimo())
+                .descripcion(analisisDto.getDescripcion())
                 .unidadEntity(findUnidadEntity)
                 .grupoEntity(findGrupoEntity)
                 .auditoriaEntity(auditoria)
@@ -58,23 +58,24 @@ public class AnalisisServiceImpl implements IAnalisisService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
                 .build();
 
-        UnidadEntity findUnidadEntity = unidadRepository.findById(analisisDto.getUnidadEntity().getUnidadId())
-                .orElseThrow(() -> new RuntimeException("No se encontró a ninguna unidad con id: " + analisisDto.getUnidadEntity().getUnidadId()));
+        UnidadEntity findUnidadEntity = unidadRepository.findById(analisisDto.getUnidad().getUnidadId())
+                .orElseThrow(() -> new RuntimeException("No se encontró a ninguna unidad con id: " + analisisDto.getUnidad().getUnidadId()));
 
-        GrupoEntity findGrupoEntity = grupoRepository.findById(analisisDto.getGrupoEntity().getGrupoId())
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún grupo con id: " + analisisDto.getGrupoEntity().getGrupoId()));
+        GrupoEntity findGrupoEntity = grupoRepository.findById(analisisDto.getGrupo().getGrupoId())
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún grupo con id: " + analisisDto.getGrupo().getGrupoId()));
 
         AnalisisEntity analisisEntity = AnalisisEntity.builder()
                 .nombre(analisisDto.getNombre())
                 .precio(analisisDto.getPrecio())
                 .maximo(analisisDto.getMaximo())
                 .minimo(analisisDto.getMinimo())
+                .descripcion(analisisDto.getDescripcion())
                 .unidadEntity(findUnidadEntity)
                 .grupoEntity(findGrupoEntity)
                 .auditoriaEntity(auditoria)
@@ -83,37 +84,28 @@ public class AnalisisServiceImpl implements IAnalisisService {
         return analisisRepository.save(analisisEntity);
     }
 
-
     @Override
     public String eliminarAnalisis(Long id) {
-        Optional<AnalisisEntity> findEntity = Optional.ofNullable(analisisRepository
+        analisisRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún análisis con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
+        analisisRepository.deleteAnalisisById(id);
 
-        analisisRepository.delete(findEntity.get());
         return "eliminado";
 
     }
 
     @Override
-    public Iterable<AnalisisEntity> obtenerAnalisisPorId(Long id) {
-        Optional<AnalisisEntity> findEntity = Optional.ofNullable(analisisRepository
+    public AnalisisEntity obtenerAnalisisPorId(Long id) {
+
+        return analisisRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<AnalisisEntity>) findEntity.get();
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún análisis con id: " + id));
     }
 
     @Override
-    public Page<AnalisisEntity> obtenerAnalisis(Pageable pageable) {
-        return analisisRepository.findAll(pageable).map((element) -> element);
+    public List<AnalisisEntity> obtenerAnalisis() {
+        return analisisRepository.findAll();
     }
 }

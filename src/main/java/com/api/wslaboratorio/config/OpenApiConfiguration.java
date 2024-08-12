@@ -15,11 +15,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         servers = {@Server(
-                url = "/api",
-                description = "Servidor Aplicación Laboratorio"
+                url = "/api"//,
+               // description = "Servidor Aplicación Laboratorio"
         )},
         info = @Info(
-                title = "API Rest WSLABORATORIO",
+                title = "TFM",
                 description = "Está api rest tiene como objetivo servir de manera controlada la información para la administración" +
                         " de una empresa que gestiona citas de exámenes de laboratorio.",
                 version = "${api.version}",

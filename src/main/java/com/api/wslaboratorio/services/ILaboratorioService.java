@@ -3,8 +3,8 @@ package com.api.wslaboratorio.services;
 import com.api.wslaboratorio.dto.LaboratorioDto;
 import com.api.wslaboratorio.entities.LaboratorioEntity;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface ILaboratorioService {
     LaboratorioEntity crearLaboratorio(LaboratorioDto laboratorioDto, HttpServletRequest request);
@@ -13,8 +13,8 @@ public interface ILaboratorioService {
 
     String eliminarLaboratorio(Long id);
 
-    Iterable<LaboratorioEntity> obtenerLaboratorioPorId(Long id);
+    LaboratorioEntity obtenerLaboratorioPorId(Long id);
 
-    Page<LaboratorioEntity> obtenerLaboratorios(Pageable pageable);
+    List<LaboratorioEntity> obtenerLaboratorios();
 
 }

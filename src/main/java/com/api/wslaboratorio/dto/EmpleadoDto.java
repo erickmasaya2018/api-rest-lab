@@ -1,7 +1,5 @@
 package com.api.wslaboratorio.dto;
 
-import com.api.wslaboratorio.entities.EmpresaEntity;
-import com.api.wslaboratorio.entities.GeneroEntity;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -63,9 +61,9 @@ public class EmpleadoDto implements Serializable {
     @Size(max = 20, message = "El campo teléfono tiene como máximo 20 caracteres.")
     private String telefono;
 
-    @NotNull
-    private EmpresaEntity empresaEntity;
+    @NotNull(message = "El campo laboratorioId no puede estar null o vació.")
+    private Long laboratorioId;
 
-    @NotNull
-    private GeneroEntity generoEntity;
+    @NotNull(message = "El campo generoId no puede estar null o vació.")
+    private Long generoId;
 }

@@ -1,9 +1,7 @@
 package com.api.wslaboratorio.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -47,19 +45,17 @@ public class UsuarioEntity implements UserDetails {
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private Long usuarioId;
 
-    @NotNull(message = "El campo nombre de usuario es requerido y no puede ser nulo.")
-    @NotBlank(message = "El campo npoombre de usuario es requerido y no puede ser vació.")
-    @Column(name = "nombre_usuario", nullable = false, length = 100)
-    @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
-    private String nombreUsuario;
-
-    @Column(name = "email", nullable = true, length = 30)
-    @Email()
+    @Column(name = "email", nullable = false, length = 30)
+    @NotEmpty(message = "El campo email es requerido y no puede ser vació.")
+    @Email(
+            regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
+            flags = Pattern.Flag.CASE_INSENSITIVE,
+            message = "Proporcione un formato correcto de correo electrónico."
+    )
     @Comment("CAMPO PARA ALMACENAR EL EMAIL DE LA EMPRESA SEGUN EL REGISTRO DE CONSTITUCION.")
     private String email;
 
-    @NotNull(message = "El campo contraseña es requerido y no puede ser nulo.")
-    @NotBlank(message = "El campo contraseña es requerido y no puede ser vació.")
+    @NotEmpty(message = "El campo contraseña es requerido y no puede ser vació.")
     @Column(name = "contrasena", nullable = false, length = 100)
     @Comment("CAMPO QUE ALMACENA LA CONTRASEÑA CON LA QUE EL USUARIO PODRA REALIZAR LA VALIDACION DE INGRESO AL SISTEMA.")
     private String contrasena;
@@ -68,15 +64,19 @@ public class UsuarioEntity implements UserDetails {
     @Comment("CAMPO QUE ALMACENA LA CLAVE SECRETA PARA DESENCRIPTAR EL CONTENIDO CIFRADO DEL LA CONTRASEÑA.")
     private String claveSecretaContrasena;
 
+    @Column(name = "permiso", nullable = false, length = 10)
+    @Comment("CAMPO PARA ALMACENAR EL TIPO DE PERMISO QUE TIENE EN LA APLICACION EL USUARIO.")
+    private String permiso;
+
     @Embedded
     private AuditoriaEntity auditoriaEntity;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empleadoid")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "empleadoid", referencedColumnName = "empleadoid")
     private EmpleadoEntity empleadoEntity;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pacienteid")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "pacienteid", referencedColumnName = "pacienteid")
     private PacienteEntity pacienteEntity;
 
     @PrePersist
@@ -101,7 +101,7 @@ public class UsuarioEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return nombreUsuario;
+        return email;
     }
 
     @Override
@@ -123,4 +123,5 @@ public class UsuarioEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

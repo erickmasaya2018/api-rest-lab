@@ -57,8 +57,8 @@ public class PaqueteEntity {
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "tc_paquete_grupo",
-            joinColumns = @JoinColumn(name = "paqueteid"),
-            inverseJoinColumns = @JoinColumn(name = "grupoid")
+            joinColumns = @JoinColumn(name = "paqueteid", referencedColumnName = "paqueteid"),
+            inverseJoinColumns = @JoinColumn(name = "grupoid", referencedColumnName = "grupoid")
     )
     private Set<GrupoEntity> grupos = new HashSet<>();
     @PrePersist

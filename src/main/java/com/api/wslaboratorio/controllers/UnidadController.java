@@ -10,17 +10,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "unidad", description = "Controlador para gestionar la entidad de unidad.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/${api.path}/unidad")
+@RequestMapping("/unidad")
 public class UnidadController {
 
     private final IUnidadService unidadService;
@@ -35,16 +36,16 @@ public class UnidadController {
         return ResponseEntity.created(ubicacion).body(unidadNueva);
     }
 
-    @PutMapping(produces = "application/json")
+    @PutMapping(value = "/{unidadId}", produces = "application/json")
     @Operation(summary = "Servicio para editar la entidad unidad.")
     public ResponseEntity<UnidadEntity> editarUnidad(
             @Parameter
                     (
                             description = "Campo que contiene el id del empresa a editar.",
                             required = true
-                    ) Long id,
+                    ) @PathVariable("unidadId") Long unidadId,
             @RequestBody @Valid UnidadDto unidadDto, HttpServletRequest request) {
-        var unidadActualizada = unidadService.editarUnidad(id, unidadDto, request);
+        var unidadActualizada = unidadService.editarUnidad(unidadId, unidadDto, request);
         if (unidadActualizada == null) {
             return ResponseEntity.unprocessableEntity().build();
         }
@@ -53,16 +54,16 @@ public class UnidadController {
     }
 
 
-    @DeleteMapping(value = "/{id}", produces = "application/json")
+    @DeleteMapping(value = "/{unidadId}", produces = "application/json")
     @Operation(summary = "Servicio para eliminar la entidad unidad.")
     public ResponseEntity<UnidadEntity> eliminarUnidad(
             @Parameter
                     (
                             description = "Campo que contiene el id del empresa a eliminar.",
                             required = true
-                    ) Long id
+                    ) @PathVariable("unidadId") Long unidadId
     ) {
-        String unidadEliminada = unidadService.eliminarUnidad(id);
+        String unidadEliminada = unidadService.eliminarUnidad(unidadId);
 
         if (unidadEliminada == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -78,16 +79,16 @@ public class UnidadController {
         return null;
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json")
+    @GetMapping(value = "/{unidadId}", produces = "application/json")
     @Operation(summary = "Servicio para obtener la entidad unidad por el id.")
     public ResponseEntity<UnidadEntity> obtenerUnidadPorId(
             @Parameter
                     (
                             description = "Campo que contiene el id de la empresa a buscar.",
                             required = true
-                    ) Long id
+                    ) @PathVariable("unidadId") Long unidadId
     ) {
-        var unidadEntidad = unidadService.obtenerUnidadPorId(id);
+        var unidadEntidad = unidadService.obtenerUnidadPorId(unidadId);
 
         if (unidadEntidad == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -98,9 +99,9 @@ public class UnidadController {
 
     @GetMapping(produces = "application/json")
     @Operation(summary = "Servicio para obtener las entidades de unidad.")
-    public ResponseEntity<UnidadEntity> obtenerUnidades(Pageable pageable) {
-        var listaUnidades = unidadService.obtenerUnidades(pageable);
-        return ResponseEntity.ok((UnidadEntity) listaUnidades);
+    public ResponseEntity<List<UnidadEntity>> obtenerUnidades() {
+        var listaUnidades = unidadService.obtenerUnidades();
+        return new ResponseEntity<>(listaUnidades, HttpStatus.OK);
     }
 
 }

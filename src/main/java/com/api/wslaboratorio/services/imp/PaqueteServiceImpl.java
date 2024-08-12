@@ -10,15 +10,10 @@ import com.api.wslaboratorio.services.IPaqueteService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +27,7 @@ public class PaqueteServiceImpl implements IPaqueteService {
     @Override
     public PaqueteEntity crearPaquete(PaqueteDto paqueteDto, HttpServletRequest request) {
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
@@ -67,7 +62,7 @@ public class PaqueteServiceImpl implements IPaqueteService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
@@ -98,33 +93,25 @@ public class PaqueteServiceImpl implements IPaqueteService {
 
     @Override
     public String eliminarPaquete(Long id) {
-        Optional<PaqueteEntity> findEntity = Optional.ofNullable(paqueteRepository
+        PaqueteEntity findEntity = paqueteRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        paqueteRepository.delete(findEntity.get());
+        paqueteRepository.deletePaqueteById(id);
         return "eliminado";
     }
 
     @Override
-    public Iterable<PaqueteEntity> obtenerPaquetePorId(Long id) {
-        Optional<PaqueteEntity> findEntity = Optional.ofNullable(paqueteRepository
+    public PaqueteEntity obtenerPaquetePorId(Long id) {
+
+        return paqueteRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún paquete con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<PaqueteEntity>) findEntity.get();
     }
 
     @Override
-    public Page<PaqueteEntity> obtenerPaquetes(Pageable pageable) {
-        return paqueteRepository.findAll(pageable).map((element) -> element);
+    public List<PaqueteEntity> obtenerPaquetes() {
+        return paqueteRepository.findAll();
     }
 }

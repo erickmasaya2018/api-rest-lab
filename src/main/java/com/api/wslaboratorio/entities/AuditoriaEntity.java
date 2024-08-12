@@ -16,7 +16,7 @@ import java.util.Date;
 @Builder
 @Embeddable
 public class AuditoriaEntity {
-    @Column(name = "usuario_creacion", nullable = false, length = 20)
+    @Column(name = "usuario_creacion", nullable = false, length = 30)
     @Comment("CAMPO DE AUDITORIA PARA QUE ALMACENA EL NOMBRE DEL USUARIO QUE INTERACTUA CON EL REGISTRO.")
     @OrderColumn()
     private String usuarioCreacion;
@@ -27,7 +27,7 @@ public class AuditoriaEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCreacion;
 
-    @Column(name = "usuario_modificacion", nullable = true, length = 20)
+    @Column(name = "usuario_modificacion", nullable = true, length = 30)
     @Comment("CAMPO DE AUDITORIA PARA QUE ALMACENA EL ULTIMO NOMBRE DE USUARIO QUE REALICE MODIFICACION AL REGISTRO.")
     private String usuarioModificacion;
 

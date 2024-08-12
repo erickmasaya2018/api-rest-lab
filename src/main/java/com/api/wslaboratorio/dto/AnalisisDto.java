@@ -1,12 +1,15 @@
 package com.api.wslaboratorio.dto;
 
+import com.api.wslaboratorio.dto.salida.GrupoSalidaDto;
+import com.api.wslaboratorio.dto.salida.UnidadSalidaDto;
 import com.api.wslaboratorio.entities.AnalisisEntity;
-import com.api.wslaboratorio.entities.GrupoEntity;
-import com.api.wslaboratorio.entities.UnidadEntity;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -20,7 +23,7 @@ import java.io.Serializable;
 public class AnalisisDto implements Serializable {
     private Long analisisId;
 
-    @Size(message = "La entidad nombre tiene como maximo 30 caracteres.", max = 30)
+    @Size(message = "La entidad nombre tiene como maximo 30 caracteres.", max = 100)
     @NotEmpty(message = "La entidad nombre es requerida")
     private String nombre;
 
@@ -30,9 +33,13 @@ public class AnalisisDto implements Serializable {
 
     private Double maximo;
 
-    @NotNull(message = "La entidad no debe ser nula")
-    private UnidadEntity unidadEntity;
+    @Size(message = "La entidad nombre tiene como maximo 30 caracteres.", max = 2550)
+    @NotEmpty(message = "La entidad descripcion es requerida")
+    private String descripcion;
 
     @NotNull(message = "La entidad no debe ser nula")
-    private GrupoEntity grupoEntity;
+    private UnidadSalidaDto unidad;
+
+    @NotNull(message = "La entidad no debe ser nula")
+    private GrupoSalidaDto grupo;
 }

@@ -45,7 +45,7 @@ public class NotificacionEntity {
     private AuditoriaEntity auditoriaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pacienteid")
+    @JoinColumn(name = "pacienteid", referencedColumnName = "pacienteid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private PacienteEntity pacienteEntity;
 

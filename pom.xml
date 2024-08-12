@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.api</groupId>
     <artifactId>wslaboratorio</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>war</packaging>
     <name>wslaboratorio</name>
     <description>wslaboratorio</description>
@@ -31,6 +31,12 @@
         <java.version>21</java.version>
     </properties>
     <dependencies>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -136,6 +142,7 @@
     </dependencies>
 
     <build>
+        <finalName>wslaboratorio</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -171,5 +178,41 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <packaging.type>war</packaging.type>
+                <project.properties.skipTest>true</project.properties.skipTest>
+                <activatedProperties>local</activatedProperties>
+                <rp.build.warname>local</rp.build.warname>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>docker</id>
+            <properties>
+                <packaging.type>war</packaging.type>
+                <project.properties.skipTest>false</project.properties.skipTest>
+                <activatedProperties>docker</activatedProperties>
+                <rp.build.warname>docker</rp.build.warname>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>

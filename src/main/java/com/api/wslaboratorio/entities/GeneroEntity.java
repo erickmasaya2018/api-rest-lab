@@ -7,9 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Data
@@ -49,10 +47,10 @@ public class GeneroEntity {
     private AuditoriaEntity auditoriaEntity;
 
     @OneToMany(mappedBy = "generoEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<EmpleadoEntity> empleadoEntities = new HashSet<>();
+    private List<EmpleadoEntity> empleadoEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "generoEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<PacienteEntity> pacienteEntities = new HashSet<>();
+    private List<PacienteEntity> pacienteEntities = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

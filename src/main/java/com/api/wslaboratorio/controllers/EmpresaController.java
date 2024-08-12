@@ -2,6 +2,7 @@ package com.api.wslaboratorio.controllers;
 
 
 import com.api.wslaboratorio.dto.EmpresaDto;
+import com.api.wslaboratorio.dto.salida.EmpresaSalidaDto;
 import com.api.wslaboratorio.entities.EmpresaEntity;
 import com.api.wslaboratorio.services.IEmpresaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,58 +11,67 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "empresa", description = "Controlador para gestionar la entidad de empresa.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/${api.path}/empresa")
+@RequestMapping("/empresa")
 public class EmpresaController {
 
     private final IEmpresaService empresaService;
+    private final ModelMapper modelMapper;
 
-    @PostMapping(produces = "application/json")
-    @Operation(summary = "Servicio para crear la entidad empresa.")
-    public ResponseEntity<EmpresaEntity> crearEmpresa(@RequestBody @Valid EmpresaDto empresaDto, HttpServletRequest request) {
-        var nuevaEmpresa = empresaService.crearEmpresa(empresaDto, request);
-        URI ubicacion = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(nuevaEmpresa.getEmpresaId()).toUri();
-
-        return ResponseEntity.created(ubicacion).body(nuevaEmpresa);
-    }
-
-    @PutMapping(produces = "application/json")
+    @PutMapping(value = "/{empresaId}", produces = "application/json")
     @Operation(summary = "Servicio para editar la entidad empresa.")
-    public ResponseEntity<EmpresaEntity> editarEmpresa(
+    public ResponseEntity<EmpresaSalidaDto> editarEmpresa(
             @Parameter
                     (
                             description = "Campo que contiene el id del empresa a editar.",
                             required = true
-                    ) Long id,
-            @RequestBody @Valid EmpresaDto empresaDto, HttpServletRequest request) {
-        var empresaActualizada = empresaService.editarEmpresa(id, empresaDto, request);
+                    ) @PathVariable("empresaId") Long empresaId,
+            @RequestBody
+            @Valid EmpresaDto empresaDto, HttpServletRequest
+                    request) {
+
+        EmpresaEntity empresaActualizada = empresaService.editarEmpresa(empresaId, empresaDto, request);
+
         if (empresaActualizada == null) {
             return ResponseEntity.unprocessableEntity().build();
         }
 
-        return ResponseEntity.ok(empresaActualizada);
+        return ResponseEntity.ok(modelMapper.map(empresaActualizada, EmpresaSalidaDto.class));
+
     }
 
-    @DeleteMapping(value = "/{id}", produces = "application/json")
+    @PostMapping(produces = "application/json")
+    @Operation(summary = "Servicio para crear la entidad empresa.")
+    public ResponseEntity<EmpresaSalidaDto> crearEmpresa(@RequestBody @Valid EmpresaDto empresaDto, HttpServletRequest request) {
+        EmpresaEntity nuevaEmpresa = empresaService.crearEmpresa(empresaDto, request);
+        URI ubicacion = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(nuevaEmpresa.getEmpresaId()).toUri();
+
+        return ResponseEntity.created(ubicacion).body(modelMapper.map(nuevaEmpresa, EmpresaSalidaDto.class));
+    }
+
+    @DeleteMapping(value = "/{empresaId}", produces = "application/json")
     @Operation(summary = "Servicio para eliminar la entidad empresa.")
     public ResponseEntity<EmpresaEntity> eliminarEmpresa(
             @Parameter
                     (
                             description = "Campo que contiene el id del empresa a eliminar.",
                             required = true
-                    ) Long id
+                    ) @PathVariable("empresaId") Long empresaId
     ) {
-        String empresaEliminada = empresaService.eliminarEmpresa(id);
+        String empresaEliminada = empresaService.eliminarEmpresa(empresaId);
 
         if (empresaEliminada == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -77,29 +87,24 @@ public class EmpresaController {
         return null;
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json")
+    @GetMapping(value = "/{empresaId}", produces = "application/json")
     @Operation(summary = "Servicio para obtener la entidad empresa por el id.")
-    public ResponseEntity<EmpresaEntity> obtenerEmpresaPorId(
+    public ResponseEntity<EmpresaSalidaDto> obtenerEmpresaPorId(
             @Parameter
                     (
                             description = "Campo que contiene el id de la empresa a buscar.",
                             required = true
-                    ) Long id
+                    ) @PathVariable("empresaId") Long empresaId
     ) {
-        var empresaEntidad = empresaService.obtenerEmpresaPorId(id);
-
-        if (empresaEntidad == null) {
-            return ResponseEntity.unprocessableEntity().build();
-        }
-
-        return ResponseEntity.ok((EmpresaEntity) empresaEntidad);
+        EmpresaEntity empresaEntidad = empresaService.obtenerEmpresaPorId(empresaId);
+        return new ResponseEntity<>(modelMapper.map(empresaEntidad, EmpresaSalidaDto.class), HttpStatus.OK);
     }
 
     @GetMapping(produces = "application/json")
     @Operation(summary = "Servicio para obtener las entidades de empresa.")
-    public ResponseEntity<EmpresaEntity> obtenerEmpresas(Pageable pageable) {
-        var listaEmpresas = empresaService.obtenerEmpresas(pageable);
-        return ResponseEntity.ok((EmpresaEntity) listaEmpresas);
+    public ResponseEntity<List<EmpresaSalidaDto>> obtenerEmpresas() {
+        List<EmpresaEntity> listaEmpresas = empresaService.obtenerEmpresas();
+        return new ResponseEntity<>(listaEmpresas.stream().map((element) -> modelMapper.map(element, EmpresaSalidaDto.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
 }

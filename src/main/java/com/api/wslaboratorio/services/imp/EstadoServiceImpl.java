@@ -8,11 +8,10 @@ import com.api.wslaboratorio.services.IEstadoService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,7 +24,7 @@ public class EstadoServiceImpl implements IEstadoService {
     public EstadoEntity crearEstado(EstadoDto estadoDto, HttpServletRequest request) {
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
@@ -46,7 +45,7 @@ public class EstadoServiceImpl implements IEstadoService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
@@ -65,34 +64,25 @@ public class EstadoServiceImpl implements IEstadoService {
     @Override
     public String eliminarEstado(Long id) {
 
-        Optional<EstadoEntity> findEntity = Optional.ofNullable(estadoRepository
+        EstadoEntity findEntity = estadoRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        estadoRepository.delete(findEntity.get());
+        estadoRepository.deleteEstadoById(id);
         return "eliminado";
 
     }
 
     @Override
-    public Iterable<EstadoEntity> obtenerEstadoPorId(Long id) {
-        Optional<EstadoEntity> findEntity = Optional.ofNullable(estadoRepository
+    public EstadoEntity obtenerEstadoPorId(Long id) {
+
+        return estadoRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<EstadoEntity>) findEntity.get();
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún estado con id: " + id));
     }
 
     @Override
-    public Page<EstadoEntity> obtenerEstados(Pageable pageable) {
-        return estadoRepository.findAll(pageable).map((element) -> element);
+    public List<EstadoEntity> obtenerEstados() {
+        return estadoRepository.findAll();
     }
 }

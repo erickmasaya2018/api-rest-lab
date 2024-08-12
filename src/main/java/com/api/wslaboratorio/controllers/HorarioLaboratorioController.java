@@ -10,17 +10,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "horario-laboratorio", description = "Controlador para gestionar el horario de atención de un laboratorio.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/${api.path}/horariolaboratorio")
+@RequestMapping("/horariolaboratorio")
 public class HorarioLaboratorioController {
 
     private final IHorarioLaboratorioService horarioLaboratorioService;
@@ -34,10 +35,10 @@ public class HorarioLaboratorioController {
         return ResponseEntity.created(ubicacion).body(horarioLaboratorioNuevo);
     }
 
-    @PutMapping(produces = "application/json")
+    @PutMapping(value = "/{horarioLaboratorioId}", produces = "application/json")
     @Operation(summary = "Servicio para editar la entidad horario laboratorio.")
-    public ResponseEntity<HorarioLaborarioEntity> editarHorarioLaboratorio(@Parameter(description = "Campo que contiene el id del laboratorio a editar.", required = true) Long id, @RequestBody @Valid HorarioLaborarioEntityDto horarioLaborarioEntityDto, HttpServletRequest request) {
-        var horarioLaborarioActualizado = horarioLaboratorioService.editarHorarioLaboratorio(id, horarioLaborarioEntityDto, request);
+    public ResponseEntity<HorarioLaborarioEntity> editarHorarioLaboratorio(@Parameter(description = "Campo que contiene el id del laboratorio a editar.", required = true) @PathVariable("horarioLaboratorioId") Long horarioLaboratorioId, @RequestBody @Valid HorarioLaborarioEntityDto horarioLaborarioEntityDto, HttpServletRequest request) {
+        var horarioLaborarioActualizado = horarioLaboratorioService.editarHorarioLaboratorio(horarioLaboratorioId, horarioLaborarioEntityDto, request);
         if (horarioLaborarioActualizado == null) {
             return ResponseEntity.unprocessableEntity().build();
         }
@@ -45,10 +46,10 @@ public class HorarioLaboratorioController {
         return ResponseEntity.ok(horarioLaborarioActualizado);
     }
 
-    @DeleteMapping(value = "/{id}", produces = "application/json")
+    @DeleteMapping(value = "/{horarioLaboratorioId}", produces = "application/json")
     @Operation(summary = "Servicio para eliminar la entidad horario laboratorio.")
-    public ResponseEntity<HorarioLaborarioEntity> eliminarLaboratorio(@Parameter(description = "Campo que contiene el id del laboratorio a eliminar.", required = true) Long id, HttpServletRequest request) {
-        String horarioLaboratorioEliminado = horarioLaboratorioService.eliminarHorarioLaboratorio(id);
+    public ResponseEntity<HorarioLaborarioEntity> eliminarLaboratorio(@Parameter(description = "Campo que contiene el id del laboratorio a eliminar.", required = true) @PathVariable("horarioLaboratorioId") Long horarioLaboratorioId, HttpServletRequest request) {
+        String horarioLaboratorioEliminado = horarioLaboratorioService.eliminarHorarioLaboratorio(horarioLaboratorioId);
 
         if (horarioLaboratorioEliminado == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -64,10 +65,10 @@ public class HorarioLaboratorioController {
         return null;
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json")
+    @GetMapping(value = "/{horarioLaboratorioId}", produces = "application/json")
     @Operation(summary = "Servicio para obtener la entidad horario laboratorio por id.")
-    public ResponseEntity<HorarioLaborarioEntity> obtenerLaboratorioPorId(@Parameter(description = "Campo que contiene el id del laboratorio a buscar.", required = true) Long id) {
-        var horariolaboratorioEntidad = horarioLaboratorioService.obtenerHorarioLaboratorioPorId(id);
+    public ResponseEntity<HorarioLaborarioEntity> obtenerLaboratorioPorId(@Parameter(description = "Campo que contiene el id del laboratorio a buscar.", required = true) @PathVariable("horarioLaboratorioId") Long horarioLaboratorioId) {
+        var horariolaboratorioEntidad = horarioLaboratorioService.obtenerHorarioLaboratorioPorId(horarioLaboratorioId);
 
         if (horariolaboratorioEntidad == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -78,9 +79,9 @@ public class HorarioLaboratorioController {
 
     @GetMapping(produces = "application/json")
     @Operation(summary = "Servicio para obtener una lista de entidades de horario laboratorio.")
-    public ResponseEntity<HorarioLaborarioEntity> obtenerLaboratorios(Pageable pageable) {
-        var listaHorarioLaboratorio = horarioLaboratorioService.obtenerHorarioLaboratorios(pageable);
-        return ResponseEntity.ok((HorarioLaborarioEntity) listaHorarioLaboratorio);
+    public ResponseEntity<List<HorarioLaborarioEntity>> obtenerLaboratorios() {
+        var listaHorarioLaboratorio = horarioLaboratorioService.obtenerHorarioLaboratorios();
+        return new ResponseEntity<>(listaHorarioLaboratorio, HttpStatus.OK);
     }
 
 }

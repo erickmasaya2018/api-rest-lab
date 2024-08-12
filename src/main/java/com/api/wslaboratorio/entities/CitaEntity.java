@@ -8,9 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Data
@@ -42,28 +40,28 @@ public class CitaEntity {
     private AuditoriaEntity auditoriaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pacienteid")
+    @JoinColumn(name = "pacienteid", referencedColumnName = "pacienteid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private PacienteEntity pacienteEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "laboratorioid")
+    @JoinColumn(name = "laboratorioid", referencedColumnName = "laboratorioid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private LaboratorioEntity laboratorioEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "estadoid")
+    @JoinColumn(name = "estadoid", referencedColumnName = "estadoid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private EstadoEntity estadoEntity;
 
     @OneToMany(mappedBy = "citaEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<CarritoEntity> carritoEntities = new HashSet<>();
+    private List<CarritoEntity> carritoEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "citaEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<ResultadoEntity> resultadoEntities = new HashSet<>();
+    private List<ResultadoEntity> resultadoEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "citaEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<FacturaEntity> facturaEntities = new HashSet<>();
+    @OneToMany(mappedBy = "citaEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<FacturaEntity> facturaEntities = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

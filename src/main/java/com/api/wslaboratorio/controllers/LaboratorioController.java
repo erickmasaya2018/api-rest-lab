@@ -10,17 +10,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "laboratorio", description = "Controlador para gestionar la entidad de laboratorio.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/${api.path}/laboratorio")
+@RequestMapping("/laboratorio")
 public class LaboratorioController {
 
     private final ILaboratorioService laboratorioService;
@@ -35,16 +36,16 @@ public class LaboratorioController {
         return ResponseEntity.created(ubicacion).body(laboratorioNuevo);
     }
 
-    @PutMapping(produces = "application/json")
+    @PutMapping(value = "/{laboratorioId}", produces = "application/json")
     @Operation(summary = "Servicio para editar la entidad laboratorio.")
     public ResponseEntity<LaboratorioEntity> editarLaboratorio(
             @Parameter
                     (
                             description = "Campo que contiene el id del laboratorio a editar.",
                             required = true
-                    ) Long id,
+                    ) @PathVariable("laboratorioId") Long laboratorioId,
             @RequestBody @Valid LaboratorioDto laboratorioDto, HttpServletRequest request) {
-        var laboratorioActualizado = laboratorioService.editarLaboratorio(id, laboratorioDto, request);
+        var laboratorioActualizado = laboratorioService.editarLaboratorio(laboratorioId, laboratorioDto, request);
         if (laboratorioActualizado == null) {
             return ResponseEntity.unprocessableEntity().build();
         }
@@ -52,16 +53,16 @@ public class LaboratorioController {
         return ResponseEntity.ok(laboratorioActualizado);
     }
 
-    @DeleteMapping(value = "/{id}", produces = "application/json")
+    @DeleteMapping(value = "/{laboratorioId}", produces = "application/json")
     @Operation(summary = "Servicio para eliminar la entidad laboratorio.")
     public ResponseEntity<LaboratorioEntity> eliminarLaboratorio(
             @Parameter
                     (
                             description = "Campo que contiene el id del laboratorio a eliminar.",
                             required = true
-                    ) Long id
+                    )@PathVariable("laboratorioId") Long laboratorioId
             , HttpServletRequest request) {
-        String laboratorioEliminado = laboratorioService.eliminarLaboratorio(id);
+        String laboratorioEliminado = laboratorioService.eliminarLaboratorio(laboratorioId);
 
         if (laboratorioEliminado == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -77,16 +78,16 @@ public class LaboratorioController {
         return null;
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json")
+    @GetMapping(value = "/{laboratorioId}", produces = "application/json")
     @Operation(summary = "Servicio para obtener la entidad laboratorio por id.")
     public ResponseEntity<LaboratorioEntity> obtenerLaboratorioPorId(
             @Parameter
                     (
                             description = "Campo que contiene el id del laboratorio a buscar.",
                             required = true
-                    ) Long id
+                    ) @PathVariable("laboratorioId") Long laboratorioId
     ) {
-        var laboratorioEntidad = laboratorioService.obtenerLaboratorioPorId(id);
+        var laboratorioEntidad = laboratorioService.obtenerLaboratorioPorId(laboratorioId);
 
         if (laboratorioEntidad == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -97,9 +98,9 @@ public class LaboratorioController {
 
     @GetMapping(produces = "application/json")
     @Operation(summary = "Servicio para obtener una lista de entidades de laboratorio.")
-    public ResponseEntity<LaboratorioEntity> obtenerLaboratorios(Pageable pageable) {
-        var listaLaboratorios = laboratorioService.obtenerLaboratorios(pageable);
-        return ResponseEntity.ok((LaboratorioEntity) listaLaboratorios);
+    public ResponseEntity<List<LaboratorioEntity>> obtenerLaboratorios() {
+        var listaLaboratorios = laboratorioService.obtenerLaboratorios();
+        return new ResponseEntity<>(listaLaboratorios, HttpStatus.OK);
     }
 
 }

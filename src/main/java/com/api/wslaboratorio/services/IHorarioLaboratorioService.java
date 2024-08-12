@@ -3,8 +3,8 @@ package com.api.wslaboratorio.services;
 import com.api.wslaboratorio.dto.HorarioLaborarioEntityDto;
 import com.api.wslaboratorio.entities.HorarioLaborarioEntity;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface IHorarioLaboratorioService {
     HorarioLaborarioEntity crearHorarioLaboratorio(HorarioLaborarioEntityDto horarioLaborarioEntityDto, HttpServletRequest request);
@@ -13,8 +13,8 @@ public interface IHorarioLaboratorioService {
 
     String eliminarHorarioLaboratorio(Long id);
 
-    Iterable<HorarioLaborarioEntity> obtenerHorarioLaboratorioPorId(Long id);
+    HorarioLaborarioEntity obtenerHorarioLaboratorioPorId(Long id);
 
-    Page<HorarioLaborarioEntity> obtenerHorarioLaboratorios(Pageable pageable);
+    List<HorarioLaborarioEntity> obtenerHorarioLaboratorios();
 
 }

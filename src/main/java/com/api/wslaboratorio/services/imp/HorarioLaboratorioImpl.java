@@ -8,11 +8,10 @@ import com.api.wslaboratorio.services.IHorarioLaboratorioService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,7 +24,7 @@ public class HorarioLaboratorioImpl implements IHorarioLaboratorioService {
     @Override
     public HorarioLaborarioEntity crearHorarioLaboratorio(HorarioLaborarioEntityDto horarioLaborarioEntityDto, HttpServletRequest request) {
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
@@ -49,7 +48,7 @@ public class HorarioLaboratorioImpl implements IHorarioLaboratorioService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
@@ -70,35 +69,24 @@ public class HorarioLaboratorioImpl implements IHorarioLaboratorioService {
 
     @Override
     public String eliminarHorarioLaboratorio(Long id) {
-        Optional<HorarioLaborarioEntity> findEntity = Optional.ofNullable(horarioLaboratorioRepository
+        HorarioLaborarioEntity findEntity = horarioLaboratorioRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        horarioLaboratorioRepository.delete(findEntity.get());
-
+        horarioLaboratorioRepository.deleteHorarioLaboratorioById(id);
         return "eliminado";
     }
 
     @Override
-    public Iterable<HorarioLaborarioEntity> obtenerHorarioLaboratorioPorId(Long id) {
+    public HorarioLaborarioEntity obtenerHorarioLaboratorioPorId(Long id) {
 
-        Optional<HorarioLaborarioEntity> findEntity = Optional.ofNullable(horarioLaboratorioRepository
+        return horarioLaboratorioRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<HorarioLaborarioEntity>) findEntity.get();
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún horario laboral con id: " + id));
     }
 
     @Override
-    public Page<HorarioLaborarioEntity> obtenerHorarioLaboratorios(Pageable pageable) {
-        return null;
+    public List<HorarioLaborarioEntity> obtenerHorarioLaboratorios() {
+        return horarioLaboratorioRepository.findAll();
     }
 }

@@ -8,9 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Data
@@ -64,15 +62,18 @@ public class LaboratorioEntity {
     private AuditoriaEntity auditoriaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empresaid")
+    @JoinColumn(name = "empresaid", referencedColumnName = "empresaid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private EmpresaEntity empresaEntity;
 
     @OneToMany(mappedBy = "laboratorioEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<CitaEntity> citaEntities = new HashSet<>();
+    private List<CitaEntity> citaEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "laboratorioEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<HorarioLaborarioEntity> horarioLaborarioEntities = new HashSet<>();
+    @OneToMany(mappedBy = "laboratorioEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<HorarioLaborarioEntity> horarioLaborarioEntities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "laboratorioEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<EmpleadoEntity> empleadoEntities = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

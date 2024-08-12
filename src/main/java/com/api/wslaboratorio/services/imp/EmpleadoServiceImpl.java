@@ -3,42 +3,41 @@ package com.api.wslaboratorio.services.imp;
 import com.api.wslaboratorio.dto.EmpleadoDto;
 import com.api.wslaboratorio.entities.AuditoriaEntity;
 import com.api.wslaboratorio.entities.EmpleadoEntity;
-import com.api.wslaboratorio.entities.EmpresaEntity;
 import com.api.wslaboratorio.entities.GeneroEntity;
+import com.api.wslaboratorio.entities.LaboratorioEntity;
 import com.api.wslaboratorio.repositories.IEmpleadoRepository;
-import com.api.wslaboratorio.repositories.IEmpresaRepository;
 import com.api.wslaboratorio.repositories.IGeneroRepository;
+import com.api.wslaboratorio.repositories.ILaboratorioRepository;
 import com.api.wslaboratorio.services.IEmpleadoService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class EmpleadoServiceImpl implements IEmpleadoService {
     private final IEmpleadoRepository empleadoRepository;
-    private final IEmpresaRepository empresaRepository;
+    private final ILaboratorioRepository laboratorioRepository;
     private final IGeneroRepository generoRepository;
     private final JwtService jwtService;
 
     @Override
     public EmpleadoEntity crearEmpleado(EmpleadoDto empleadoDto, HttpServletRequest request) {
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
-        EmpresaEntity findEmpresaEntity = empresaRepository.findById(empleadoDto.getEmpresaEntity().getEmpresaId())
-                .orElseThrow(() -> new RuntimeException("No se encontró a ninguna empresa con id: " + empleadoDto.getEmpresaEntity().getEmpresaId()));
+        LaboratorioEntity findLaboratorioEntity = laboratorioRepository.findById(empleadoDto.getLaboratorioId())
+                .orElseThrow(() -> new RuntimeException("No se encontró a ninguna empresa con id: " + empleadoDto.getLaboratorioId()));
 
-        GeneroEntity findGeneroEntity = generoRepository.findById(empleadoDto.getGeneroEntity().getGeneroId())
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún genero con id: " + empleadoDto.getGeneroEntity().getGeneroId()));
+        GeneroEntity findGeneroEntity = generoRepository.findById(empleadoDto.getGeneroId())
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún genero con id: " + empleadoDto.getGeneroId()));
 
         EmpleadoEntity empleadoNuevo = EmpleadoEntity.builder()
                 .dni(empleadoDto.getDni())
@@ -52,7 +51,7 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
                 .estadoprovincia(empleadoDto.getEstadoprovincia())
                 .fechaNacimiento(empleadoDto.getFechaNacimiento())
                 .telefono(empleadoDto.getTelefono())
-                .empresaEntity(findEmpresaEntity)
+                .laboratorioEntity(findLaboratorioEntity)
                 .generoEntity(findGeneroEntity)
                 .auditoriaEntity(auditoria)
                 .build();
@@ -69,17 +68,17 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
                 .build();
 
-        EmpresaEntity findEmpresaEntity = empresaRepository.findById(empleadoDto.getEmpresaEntity().getEmpresaId())
-                .orElseThrow(() -> new RuntimeException("No se encontró a ninguna empresa con id: " + empleadoDto.getEmpresaEntity().getEmpresaId()));
+        LaboratorioEntity findLaboratorioEntity = laboratorioRepository.findById(empleadoDto.getLaboratorioId())
+                .orElseThrow(() -> new RuntimeException("No se encontró a ninguna empresa con id: " + empleadoDto.getLaboratorioId()));
 
-        GeneroEntity findGeneroEntity = generoRepository.findById(empleadoDto.getGeneroEntity().getGeneroId())
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún genero con id: " + empleadoDto.getGeneroEntity().getGeneroId()));
+        GeneroEntity findGeneroEntity = generoRepository.findById(empleadoDto.getGeneroId())
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún genero con id: " + empleadoDto.getGeneroId()));
 
         EmpleadoEntity empleadoEntity = EmpleadoEntity.builder()
                 .dni(empleadoDto.getDni())
@@ -93,7 +92,7 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
                 .estadoprovincia(empleadoDto.getEstadoprovincia())
                 .fechaNacimiento(empleadoDto.getFechaNacimiento())
                 .telefono(empleadoDto.getTelefono())
-                .empresaEntity(findEmpresaEntity)
+                .laboratorioEntity(findLaboratorioEntity)
                 .generoEntity(findGeneroEntity)
                 .auditoriaEntity(auditoria)
                 .build();
@@ -103,33 +102,25 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
 
     @Override
     public String eliminarEmpleado(Long id) {
-        Optional<EmpleadoEntity> findEntity = Optional.ofNullable(empleadoRepository
+        EmpleadoEntity findEntity = empleadoRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
+        empleadoRepository.deleteEmpleadoById(id);
 
-        empleadoRepository.delete(findEntity.get());
         return "eliminado";
     }
 
     @Override
-    public Iterable<EmpleadoEntity> obtenerEmpleadoPorId(Long id) {
-        Optional<EmpleadoEntity> findEntity = Optional.ofNullable(empleadoRepository
+    public EmpleadoEntity obtenerEmpleadoPorId(Long id) {
+
+        return empleadoRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<EmpleadoEntity>) findEntity.get();
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún empleado con id: " + id));
     }
 
     @Override
-    public Page<EmpleadoEntity> obtenerEmpleados(Pageable pageable) {
-        return empleadoRepository.findAll(pageable).map((element) -> element);
+    public List<EmpleadoEntity> obtenerEmpleados() {
+        return empleadoRepository.findAll();
     }
 }

@@ -3,8 +3,8 @@ package com.api.wslaboratorio.services;
 import com.api.wslaboratorio.dto.EmpresaDto;
 import com.api.wslaboratorio.entities.EmpresaEntity;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface IEmpresaService {
     EmpresaEntity crearEmpresa(EmpresaDto empresaDto, HttpServletRequest request);
@@ -13,8 +13,8 @@ public interface IEmpresaService {
 
     String eliminarEmpresa(Long id);
 
-    Iterable<EmpresaEntity> obtenerEmpresaPorId(Long id);
+    EmpresaEntity obtenerEmpresaPorId(Long id);
 
-    Page<EmpresaEntity> obtenerEmpresas(Pageable pageable);
+    List<EmpresaEntity> obtenerEmpresas();
 
 }

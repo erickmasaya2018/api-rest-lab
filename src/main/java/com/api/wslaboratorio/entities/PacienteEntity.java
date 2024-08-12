@@ -1,5 +1,6 @@
 package com.api.wslaboratorio.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,9 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Data
@@ -42,6 +43,12 @@ public class PacienteEntity {
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String dni;
 
+    @Column(name = "fecha_nacimiento", nullable = false)
+    @Comment("CAMPO PARA ALMACENAR LA FECHA DE NACIMIENTO DEL EMPLEADO.")
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private Date fechaNacimiento;
+
     @Column(name = "primer_nombre", nullable = false, length = 20)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String primerNombre;
@@ -70,6 +77,10 @@ public class PacienteEntity {
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String ciudad;
 
+    @Column(name = "estado_provincia", nullable = false, length = 20)
+    @Comment("CAMPO PARA ALMACENAR EL ESTADO PROVINCIA DONDE RESIDE ACTUALMENTE EL EMPLEADO.")
+    private String estadoprovincia;
+
     @Column(name = "telefono", nullable = true, length = 20)
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private String telefono;
@@ -78,18 +89,18 @@ public class PacienteEntity {
     private AuditoriaEntity auditoriaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "generoid")
+    @JoinColumn(name = "generoid", referencedColumnName = "generoid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private GeneroEntity generoEntity;
 
     @OneToOne(mappedBy = "pacienteEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UsuarioEntity usuarioEntity;
 
-    @OneToMany(mappedBy = "pacienteEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<CitaEntity> citaEntities = new HashSet<>();
+    @OneToMany(mappedBy = "pacienteEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CitaEntity> citaEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "pacienteEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<NotificacionEntity> notificacionEntities = new HashSet<>();
+    private List<NotificacionEntity> notificacionEntities = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

@@ -51,7 +51,7 @@ public class FacturaEntity {
     private AuditoriaEntity auditoriaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "citaid")
+    @JoinColumn(name = "citaid", referencedColumnName = "citaid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private CitaEntity citaEntity;
 

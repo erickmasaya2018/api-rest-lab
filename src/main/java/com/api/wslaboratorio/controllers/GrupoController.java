@@ -10,17 +10,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "grupo", description = "Controlador para gestionar la entidad de grupo.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/${api.path}/grupo")
+@RequestMapping("/grupo")
 public class GrupoController {
 
     private final IGrupoService grupoService;
@@ -35,16 +36,16 @@ public class GrupoController {
         return ResponseEntity.created(ubicacion).body(nuevoGrupo);
     }
 
-    @PutMapping(produces = "application/json")
+    @PutMapping(value = "/{grupoId}", produces = "application/json")
     @Operation(summary = "Servicio para editar la entidad grupo.")
     public ResponseEntity<GrupoEntity> editarGrupo(
             @Parameter
                     (
                             description = "Campo que contiene el id del empresa a editar.",
                             required = true
-                    ) Long id,
+                    ) @PathVariable("grupoId") Long grupoId,
             @RequestBody @Valid GrupoDto grupoDto, HttpServletRequest request) {
-        var grupoActualizado = grupoService.editarGrupo(id, grupoDto, request);
+        var grupoActualizado = grupoService.editarGrupo(grupoId, grupoDto, request);
         if (grupoActualizado == null) {
             return ResponseEntity.unprocessableEntity().build();
         }
@@ -53,16 +54,16 @@ public class GrupoController {
     }
 
 
-    @DeleteMapping(value = "/{id}", produces = "application/json")
+    @DeleteMapping(value = "/{grupoId}", produces = "application/json")
     @Operation(summary = "Servicio para eliminar la entidad grupo.")
     public ResponseEntity<GrupoEntity> eliminarGrupo(
             @Parameter
                     (
                             description = "Campo que contiene el id del empresa a eliminar.",
                             required = true
-                    ) Long id
+                    ) @PathVariable("grupoId") Long grupoId
     ) {
-        String grupoEliminado = grupoService.eliminarGrupo(id);
+        String grupoEliminado = grupoService.eliminarGrupo(grupoId);
 
         if (grupoEliminado == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -78,16 +79,16 @@ public class GrupoController {
         return null;
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json")
+    @GetMapping(value = "/{grupoId}", produces = "application/json")
     @Operation(summary = "Servicio para obtener la entidad grupo por el id.")
     public ResponseEntity<GrupoEntity> obtenerGrupoPorId(
             @Parameter
                     (
                             description = "Campo que contiene el id de la empresa a buscar.",
                             required = true
-                    ) Long id
+                    ) @PathVariable("grupoId") Long grupoId
     ) {
-        var grupoEntidad = grupoService.obtenerGrupoPorId(id);
+        var grupoEntidad = grupoService.obtenerGrupoPorId(grupoId);
 
         if (grupoEntidad == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -98,9 +99,9 @@ public class GrupoController {
 
     @GetMapping(produces = "application/json")
     @Operation(summary = "Servicio para obtener las entidades de grupo.")
-    public ResponseEntity<GrupoEntity> obtenerGrupos(Pageable pageable) {
-        var listaGrupos = grupoService.obtenerGrupos(pageable);
-        return ResponseEntity.ok((GrupoEntity) listaGrupos);
+    public ResponseEntity<List<GrupoEntity>> obtenerGrupos() {
+        var listaGrupos = grupoService.obtenerGrupos();
+        return new ResponseEntity<>(listaGrupos, HttpStatus.OK);
     }
 
 }

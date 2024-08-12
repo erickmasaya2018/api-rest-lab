@@ -8,9 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Data
@@ -38,7 +36,7 @@ public class AnalisisEntity {
     @Comment("ID AUTOGENERADO PARA LOGRAR LA ATOMICIDAD DEL REGISTRO.")
     private Long analisisId;
 
-    @Column(name = "nombre", nullable = false, length = 50)
+    @Column(name = "nombre", nullable = false, length = 100)
     @Comment("CAMPO QUE ALMACENA EL NOMBRE DEL ANALISIS QUE FORMA PARTE DE LA CARTERA DE ESTUDIOS QUE OFRECE EL LABORATORIO CLINICO.")
     private String nombre;
 
@@ -50,29 +48,32 @@ public class AnalisisEntity {
     @Comment("CAMPO PARA ALMACENAR EL VALOR MINIMO QUE SE MARCAR COMO CORRECTO DEL ANALISIS.")
     private Double minimo;
 
-
     @Column(name = "maximo", nullable = false)
     @Comment("CAMPO PARA ALMACENAR EL VALOR MAXIMO QUE SE MARCAR COMO CORRECTO DEL ANALISIS.")
     private Double maximo;
 
+    @Column(name = "descripcion", nullable = false)
+    @Comment("CAMPO PARA ALMACENAR LA PROSA QUE DESCRIBE LAS CARACTERISTICAS DEL ANALISIS.")
+    private String descripcion;
+
     @Embedded
     private AuditoriaEntity auditoriaEntity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unidadid")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "unidadid", referencedColumnName = "unidadid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UnidadEntity unidadEntity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "grupoid")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "grupoid", referencedColumnName = "grupoid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private GrupoEntity grupoEntity;
 
     @OneToMany(mappedBy = "analisisEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<ResultadoEntity> resultadoEntities = new HashSet<>();
+    private List<ResultadoEntity> resultadoEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "analisisEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<CarritoEntity> carritoEntities = new HashSet<>();
+    private List<CarritoEntity> carritoEntities = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

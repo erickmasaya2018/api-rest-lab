@@ -3,8 +3,8 @@ package com.api.wslaboratorio.services;
 import com.api.wslaboratorio.dto.AnalisisDto;
 import com.api.wslaboratorio.entities.AnalisisEntity;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface IAnalisisService {
     AnalisisEntity crearAnalisis(AnalisisDto analisisDto, HttpServletRequest request);
@@ -13,8 +13,8 @@ public interface IAnalisisService {
 
     String eliminarAnalisis(Long id);
 
-    Iterable<AnalisisEntity> obtenerAnalisisPorId(Long id);
+    AnalisisEntity obtenerAnalisisPorId(Long id);
 
-    Page<AnalisisEntity> obtenerAnalisis(Pageable pageable);
+    List<AnalisisEntity> obtenerAnalisis();
 
 }

@@ -1,7 +1,9 @@
 package com.api.wslaboratorio.config;
 
-import com.api.wslaboratorio.services.IUsuarioService;
 import com.api.wslaboratorio.services.imp.UsuarioServiceImp;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -18,6 +20,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class ApplicationConfiguration {
@@ -26,6 +31,7 @@ public class ApplicationConfiguration {
     public ApplicationConfiguration(@Lazy UsuarioServiceImp usuarioService) {
         this.usuarioService = usuarioService;
     }
+
     @Bean
     UserDetailsService userDetailsService() {
         return username -> {
@@ -66,6 +72,29 @@ public class ApplicationConfiguration {
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // Create and configure the JavaTimeModule
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+
+        // Register custom formatters for LocalDate and LocalTime
+        javaTimeModule.addSerializer(LocalDate.class, new com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        javaTimeModule.addDeserializer(LocalDate.class, new com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+        javaTimeModule.addSerializer(LocalTime.class, new com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer(DateTimeFormatter.ofPattern("HH:mm")));
+        javaTimeModule.addDeserializer(LocalTime.class, new com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer(DateTimeFormatter.ofPattern("HH:mm")));
+
+        // Register the module with ObjectMapper
+        objectMapper.registerModule(javaTimeModule);
+
+        // Optionally configure to not write dates as timestamps
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        return objectMapper;
     }
 
 }

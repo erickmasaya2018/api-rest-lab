@@ -11,11 +11,10 @@ import com.api.wslaboratorio.services.IPacienteService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,12 +28,12 @@ public class PacienteImpl implements IPacienteService {
     @Override
     public PacienteEntity crearPaciente(PacienteDto pacienteDto, HttpServletRequest request) {
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
-        GeneroEntity findEntity = generoRepository.findById(pacienteDto.getGeneroEntity().getGeneroId())
-                .orElseThrow(() -> new RuntimeException("No se encontró la entidad con el id: " + pacienteDto.getGeneroEntity().getGeneroId()));
+        GeneroEntity findEntity = generoRepository.findById(pacienteDto.getGeneroId())
+                .orElseThrow(() -> new RuntimeException("No se encontró la entidad con el id: " + pacienteDto.getGeneroId()));
 
         PacienteEntity pacienteEntity = PacienteEntity.builder()
                 .dni(pacienteDto.getDni())
@@ -61,14 +60,14 @@ public class PacienteImpl implements IPacienteService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
                 .build();
 
-        GeneroEntity generoEntity = generoRepository.findById(pacienteDto.getGeneroEntity().getGeneroId())
-                .orElseThrow(() -> new RuntimeException("No se encontró la entidad con el id: " + pacienteDto.getGeneroEntity().getGeneroId()));
+        GeneroEntity generoEntity = generoRepository.findById(pacienteDto.getGeneroId())
+                .orElseThrow(() -> new RuntimeException("No se encontró la entidad con el id: " + pacienteDto.getGeneroId()));
 
 
         PacienteEntity pacienteEntity = PacienteEntity.builder()
@@ -91,34 +90,25 @@ public class PacienteImpl implements IPacienteService {
     @Override
     public String eliminarPaciente(Long id) {
 
-        Optional<PacienteEntity> findEntity = Optional.ofNullable(pacienteRepository
+        PacienteEntity findEntity = pacienteRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        pacienteRepository.delete(findEntity.get());
+        pacienteRepository.deletePacienteById(id);
         return "eliminado";
     }
 
     @Override
-    public Iterable<PacienteEntity> obtenerPacientePorId(Long id) {
-        Optional<PacienteEntity> findEntity = Optional.ofNullable(pacienteRepository
+    public PacienteEntity obtenerPacientePorId(Long id) {
+
+        return pacienteRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<PacienteEntity>) findEntity.get();
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún paciente con id: " + id));
     }
 
     @Override
-    public Page<PacienteEntity> obtenerPacientes(Pageable pageable) {
-        return pacienteRepository.findAll(pageable).map((element) -> element);
+    public List<PacienteEntity> obtenerPacientes() {
+        return pacienteRepository.findAll();
     }
 
     @Override

@@ -11,17 +11,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "paciente", description = "Controlador para gestionar la entidad de paciente.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/${api.path}/paciente")
+@RequestMapping("/paciente")
 public class PacienteController {
 
     private final IPacienteService pacienteService;
@@ -36,16 +37,16 @@ public class PacienteController {
         return ResponseEntity.created(ubicacion).body(pacienteNuevo);
     }
 
-    @PutMapping(produces = "application/json")
+    @PutMapping(value = "/{pacienteId}", produces = "application/json")
     @Operation(summary = "Servicio para editar la entidad empresa.")
     public ResponseEntity<PacienteEntity> editarPaciente(
             @Parameter
                     (
                             description = "Campo que contiene el id del empresa a editar.",
                             required = true
-                    ) Long id,
+                    ) @PathVariable("pacienteId") Long pacienteId,
             @RequestBody @Valid PacienteDto pacienteDto, HttpServletRequest request) {
-        var pacienteActualizado = pacienteService.editarPaciente(id, pacienteDto, request);
+        var pacienteActualizado = pacienteService.editarPaciente(pacienteId, pacienteDto, request);
         if (pacienteActualizado == null) {
             return ResponseEntity.unprocessableEntity().build();
         }
@@ -54,16 +55,16 @@ public class PacienteController {
     }
 
 
-    @DeleteMapping(value = "/{id}", produces = "application/json")
+    @DeleteMapping(value = "/{pacienteId}", produces = "application/json")
     @Operation(summary = "Servicio para eliminar la entidad empresa.")
     public ResponseEntity<PacienteEntity> eliminarPaciente(
             @Parameter
                     (
                             description = "Campo que contiene el id del empresa a eliminar.",
                             required = true
-                    ) Long id
+                    ) @PathVariable("pacienteId") Long pacienteId
     ) {
-        String pacienteEliminado = pacienteService.eliminarPaciente(id);
+        String pacienteEliminado = pacienteService.eliminarPaciente(pacienteId);
 
         if (pacienteEliminado == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -79,16 +80,16 @@ public class PacienteController {
         return null;
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json")
+    @GetMapping(value = "/{pacienteId}", produces = "application/json")
     @Operation(summary = "Servicio para obtener la entidad empresa por el id.")
     public ResponseEntity<PacienteEntity> obtenerPacientePorId(
             @Parameter
                     (
                             description = "Campo que contiene el id de la empresa a buscar.",
                             required = true
-                    ) Long id
+                    ) @PathVariable("pacienteId") Long pacienteId
     ) {
-        var pacienteEntidad = pacienteService.obtenerPacientePorId(id);
+        var pacienteEntidad = pacienteService.obtenerPacientePorId(pacienteId);
 
         if (pacienteEntidad == null) {
             return ResponseEntity.unprocessableEntity().build();
@@ -99,9 +100,9 @@ public class PacienteController {
 
     @GetMapping(produces = "application/json")
     @Operation(summary = "Servicio para obtener las entidades de empresa.")
-    public ResponseEntity<PacienteEntity> obtenerPaciente(Pageable pageable) {
-        var listaPacientes = pacienteService.obtenerPacientes(pageable);
-        return ResponseEntity.ok((PacienteEntity) listaPacientes);
+    public ResponseEntity<List<PacienteEntity>> obtenerPacientes() {
+        var listaPacientes = pacienteService.obtenerPacientes();
+        return new ResponseEntity<>(listaPacientes, HttpStatus.OK);
     }
 
 

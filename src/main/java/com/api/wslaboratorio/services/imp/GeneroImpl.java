@@ -8,11 +8,10 @@ import com.api.wslaboratorio.services.IGeneroService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,7 +23,7 @@ public class GeneroImpl implements IGeneroService {
     @Override
     public GeneroEntity crearGenero(GeneroDto generoDto, HttpServletRequest request) {
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
@@ -45,7 +44,7 @@ public class GeneroImpl implements IGeneroService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
@@ -63,34 +62,22 @@ public class GeneroImpl implements IGeneroService {
 
     @Override
     public String eliminarGenero(Long id) {
-        Optional<GeneroEntity> findEntity = Optional.ofNullable(generoRepository
+        GeneroEntity findEntity = generoRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        generoRepository.delete(findEntity.get());
+        generoRepository.deleteGeneroById(id);
         return "eliminado";
     }
 
     @Override
-    public Iterable<GeneroEntity> obtenerGeneroPorId(Long id) {
-
-        Optional<GeneroEntity> findEntity = Optional.ofNullable(generoRepository
-                .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<GeneroEntity>) findEntity.get();
+    public GeneroEntity obtenerGeneroPorId(Long id) {
+        return generoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún genero con id: " + id));
     }
 
     @Override
-    public Page<GeneroEntity> obtenerGeneros(Pageable pageable) {
-        return generoRepository.findAll(pageable).map((element) -> element);
+    public List<GeneroEntity> obtenerGeneros() {
+        return generoRepository.findAll();
     }
 }

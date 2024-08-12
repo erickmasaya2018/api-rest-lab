@@ -8,11 +8,10 @@ import com.api.wslaboratorio.services.ILaboratorioService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,7 +24,7 @@ public class LaboratorioServiceImpl implements ILaboratorioService {
     @Override
     public LaboratorioEntity crearLaboratorio(LaboratorioDto laboratorioDto, HttpServletRequest request) {
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
@@ -50,7 +49,7 @@ public class LaboratorioServiceImpl implements ILaboratorioService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
@@ -72,36 +71,25 @@ public class LaboratorioServiceImpl implements ILaboratorioService {
     @Override
     public String eliminarLaboratorio(Long id) {
 
-        Optional<LaboratorioEntity> findEntity = Optional.ofNullable(laboratorioRepository
+      LaboratorioEntity findEntity =laboratorioRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        laboratorioRepository.delete(findEntity.get());
-
+        laboratorioRepository.deleteLaboratorioById(id);
         return "eliminado";
 
     }
 
     @Override
-    public Iterable<LaboratorioEntity> obtenerLaboratorioPorId(Long id) {
+    public LaboratorioEntity obtenerLaboratorioPorId(Long id) {
 
-        Optional<LaboratorioEntity> findEntity = Optional.ofNullable(laboratorioRepository
+        return laboratorioRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<LaboratorioEntity>) findEntity.get();
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún laboratorio con id: " + id));
     }
 
     @Override
-    public Page<LaboratorioEntity> obtenerLaboratorios(Pageable pageable) {
-        return laboratorioRepository.findAll(pageable).map((element) -> element);
+    public List<LaboratorioEntity> obtenerLaboratorios() {
+        return laboratorioRepository.findAll();
     }
 }

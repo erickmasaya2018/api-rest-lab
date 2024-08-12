@@ -8,11 +8,10 @@ import com.api.wslaboratorio.services.IGrupoService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,7 +24,7 @@ public class GrupoServiceImpl implements IGrupoService {
     @Override
     public GrupoEntity crearGrupo(GrupoDto grupoDto, HttpServletRequest request) {
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
@@ -45,7 +44,7 @@ public class GrupoServiceImpl implements IGrupoService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
@@ -64,35 +63,25 @@ public class GrupoServiceImpl implements IGrupoService {
     @Override
     public String eliminarGrupo(Long id) {
 
-        Optional<GrupoEntity> findEntity = Optional.ofNullable(grupoRepository
+       GrupoEntity findEntity = grupoRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        grupoRepository.delete(findEntity.get());
+        grupoRepository.deleteGrupoById(id);
         return "eliminado";
     }
 
     @Override
-    public Iterable<GrupoEntity> obtenerGrupoPorId(Long id) {
+    public GrupoEntity obtenerGrupoPorId(Long id) {
 
-        Optional<GrupoEntity> findEntity = Optional.ofNullable(grupoRepository
+        return grupoRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<GrupoEntity>) findEntity.get();
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún grupo con id: " + id));
     }
 
     @Override
-    public Page<GrupoEntity> obtenerGrupos(Pageable pageable) {
+    public List<GrupoEntity> obtenerGrupos() {
 
-        return grupoRepository.findAll(pageable).map((element) -> element);
+        return grupoRepository.findAll();
     }
 }

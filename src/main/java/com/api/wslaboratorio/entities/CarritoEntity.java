@@ -40,12 +40,12 @@ public class CarritoEntity {
     private AuditoriaEntity auditoriaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "analisisid")
+    @JoinColumn(name = "analisisid", referencedColumnName = "analisisid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private AnalisisEntity analisisEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "citaid")
+    @JoinColumn(name = "citaid", referencedColumnName = "citaid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private CitaEntity citaEntity;
 

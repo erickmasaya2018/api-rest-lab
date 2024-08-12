@@ -30,7 +30,7 @@ public class CitaServiceImpl implements ICitaService {
     @Override
     public CitaEntity crearCita(CitaDto citaDto, HttpServletRequest request) {
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
@@ -62,7 +62,7 @@ public class CitaServiceImpl implements ICitaService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
@@ -89,29 +89,21 @@ public class CitaServiceImpl implements ICitaService {
 
     @Override
     public String eliminarCita(Long id) {
-        Optional<CitaEntity> findEntity = Optional.ofNullable(citaRepository
+        CitaEntity findEntity = citaRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún cita con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún cita con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
+        citaRepository.deleteCitaById(id);
 
-        citaRepository.delete(findEntity.get());
         return "eliminado";
     }
 
     @Override
-    public Iterable<CitaEntity> obtenerCitaPorId(Long id) {
-        Optional<CitaEntity> findEntity = Optional.ofNullable(citaRepository
+    public CitaEntity obtenerCitaPorId(Long id) {
+
+        return citaRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<CitaEntity>) findEntity.get();
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id));
     }
 
     @Override

@@ -13,7 +13,7 @@ public interface ICitaService {
 
     String eliminarCita(Long id);
 
-    Iterable<CitaEntity> obtenerCitaPorId(Long id);
+    CitaEntity obtenerCitaPorId(Long id);
 
     Page<CitaEntity> obtenerCitas(Pageable pageable);
 

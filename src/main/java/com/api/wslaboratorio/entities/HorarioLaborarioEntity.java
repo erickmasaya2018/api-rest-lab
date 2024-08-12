@@ -1,6 +1,6 @@
 package com.api.wslaboratorio.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,18 +47,19 @@ public class HorarioLaborarioEntity {
 
     @Column(name = "hora_abre", nullable = false)
     @Temporal(TemporalType.TIME)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime horaAbre;
 
     @Column(name = "hora_cierre", nullable = false)
     @Temporal(TemporalType.TIME)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime horaCierra;
 
     @Embedded
     private AuditoriaEntity auditoriaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "laboratorioid")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JoinColumn(name = "laboratorioid", referencedColumnName = "laboratorioid")
     private LaboratorioEntity laboratorioEntity;
 
     @PrePersist

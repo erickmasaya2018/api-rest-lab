@@ -4,8 +4,8 @@ import com.api.wslaboratorio.dto.PacienteDto;
 import com.api.wslaboratorio.dto.custom.PacienteCustomDto;
 import com.api.wslaboratorio.entities.PacienteEntity;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface IPacienteService {
     PacienteEntity crearPaciente(PacienteDto pacienteDto, HttpServletRequest request);
@@ -14,9 +14,9 @@ public interface IPacienteService {
 
     String eliminarPaciente(Long id);
 
-    Iterable<PacienteEntity> obtenerPacientePorId(Long id);
+    PacienteEntity obtenerPacientePorId(Long id);
 
-    Page<PacienteEntity> obtenerPacientes(Pageable pageable);
+    List<PacienteEntity> obtenerPacientes();
 
     PacienteCustomDto obtenerAnalisisPorPacienteId(Long pacienteId);
 }

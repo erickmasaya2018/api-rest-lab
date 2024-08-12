@@ -1,5 +1,6 @@
 package com.api.wslaboratorio.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -40,6 +40,12 @@ public class EmpleadoEntity {
     @Column(name = "dni", nullable = false, length = 20)
     @Comment("CAMPO QUE ALMACENA EL DNI (DOCUMENTO NACIONAL DE IDENTIDAD) DEL EMPLEADO QUE LABORA.")
     private String dni;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "fecha_nacimiento", nullable = false)
+    @Comment("CAMPO PARA ALMACENAR LA FECHA DE NACIMIENTO DEL EMPLEADO.")
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private Date fechaNacimiento;
 
     @Column(name = "primer_nombre", nullable = false, length = 20)
     @Comment("SE ALMACENA EL PRIMER NOMBRE DEL EMPLEADO A COMO SALE EN SU REGISTRO DE CONTRATACION.")
@@ -73,12 +79,6 @@ public class EmpleadoEntity {
     @Comment("CAMPO PARA ALMACENAR EL ESTADO PROVINCIA DONDE RESIDE ACTUALMENTE EL EMPLEADO.")
     private String estadoprovincia;
 
-    @Column(name = "fecha_nacimiento", nullable = false)
-    @Comment("CAMPO PARA ALMACENAR LA FECHA DE NACIMIENTO DEL EMPLEADO.")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaNacimiento;
-
     @Column(name = "telefono", nullable = true, length = 20)
     @Comment("CAMPO PARA ALMACENAR EL NUMERO DE TELEFONO DEL EMPLEADO.")
     private String telefono;
@@ -87,16 +87,16 @@ public class EmpleadoEntity {
     private AuditoriaEntity auditoriaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empresaid")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private EmpresaEntity empresaEntity;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "generoid")
+    @JoinColumn(name = "generoid", referencedColumnName = "generoid")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private GeneroEntity generoEntity;
 
-    @OneToOne(mappedBy = "empleadoEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "laboratorioid", referencedColumnName = "laboratorioid")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private LaboratorioEntity laboratorioEntity;
+
+    @OneToOne(mappedBy = "empleadoEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private UsuarioEntity usuarioEntity;
 
     @PrePersist
@@ -108,4 +108,5 @@ public class EmpleadoEntity {
     public void preUpdate() {
         this.auditoriaEntity.setFechaModificacion(new Date());
     }
+
 }

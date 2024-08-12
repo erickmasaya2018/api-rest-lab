@@ -1,7 +1,7 @@
 package com.api.wslaboratorio.dto;
 
-import com.api.wslaboratorio.entities.GeneroEntity;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,7 +52,6 @@ public class PacienteDto implements Serializable {
     @Size(max = 20, message = "El campo teléfono tiene como máximo 30 caracteres.")
     String telefono;
 
-    @NotEmpty(message = "El campo nombre no puede estar vacío.")
-    @Size(max = 30, message = "El campo dirección tiene como máximo 150 caracteres.")
-    GeneroEntity generoEntity;
+    @NotNull(message = "El campo generoId no puede estar null o vació.")
+    private Long generoId;
 }

@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class UsuarioEntityOUTDto {
-    private String nombreUsuario;
+    private Long usuarioId;
     private String email;
+    private String permiso;
+
 }

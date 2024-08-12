@@ -1,18 +1,17 @@
 package com.api.wslaboratorio.services.imp;
 
-import com.api.wslaboratorio.entities.AuditoriaEntity;
 import com.api.wslaboratorio.dto.EmpresaDto;
+import com.api.wslaboratorio.entities.AuditoriaEntity;
 import com.api.wslaboratorio.entities.EmpresaEntity;
 import com.api.wslaboratorio.repositories.IEmpresaRepository;
 import com.api.wslaboratorio.services.IEmpresaService;
 import com.api.wslaboratorio.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,7 +25,7 @@ public class EmpresaServiceImpl implements IEmpresaService {
     public EmpresaEntity crearEmpresa(EmpresaDto empresaDto, HttpServletRequest request) {
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioCreacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaCreacion(new Date())
                 .build();
 
@@ -39,6 +38,7 @@ public class EmpresaServiceImpl implements IEmpresaService {
                 .codigoPostal(empresaDto.getCodigoPostal())
                 .email(empresaDto.getEmail())
                 .sitioWeb(empresaDto.getSitioWeb())
+                .telefono(empresaDto.getTelefono())
                 .auditoriaEntity(auditoria)
                 .build();
         return empresaRepository.save(empresaEntity);
@@ -53,7 +53,7 @@ public class EmpresaServiceImpl implements IEmpresaService {
         }
 
         AuditoriaEntity auditoria = AuditoriaEntity.builder()
-                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization")))
+                .usuarioModificacion(jwtService.extractUsername(request.getHeader("Authorization").substring(7)))
                 .fechaModificacion(new Date())
                 .usuarioCreacion(findEntity.get().getAuditoriaEntity().getUsuarioCreacion())
                 .fechaCreacion(new Date())
@@ -69,6 +69,7 @@ public class EmpresaServiceImpl implements IEmpresaService {
                 .codigoPostal(empresaDto.getCodigoPostal())
                 .email(empresaDto.getEmail())
                 .sitioWeb(empresaDto.getSitioWeb())
+                .telefono(empresaDto.getTelefono())
                 .auditoriaEntity(auditoria)
                 .build();
 
@@ -77,33 +78,24 @@ public class EmpresaServiceImpl implements IEmpresaService {
 
     @Override
     public String eliminarEmpresa(Long id) {
-        Optional<EmpresaEntity> findEntity = Optional.ofNullable(empresaRepository
+        EmpresaEntity findEntity = empresaRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id));
 
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        empresaRepository.delete(findEntity.get());
+        empresaRepository.deleteEmpresaById(id);
         return "eliminado";
     }
 
     @Override
-    public Iterable<EmpresaEntity> obtenerEmpresaPorId(Long id) {
-        Optional<EmpresaEntity> findEntity = Optional.ofNullable(empresaRepository
+    public EmpresaEntity obtenerEmpresaPorId(Long id) {
+
+        return empresaRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró a ningún usuario con id: " + id)));
-
-        if (!findEntity.isPresent()) {
-            return null;
-        }
-
-        return (Iterable<EmpresaEntity>) findEntity.get();
+                .orElseThrow(() -> new RuntimeException("No se encontró a ningún empresa con id: " + id));
     }
 
     @Override
-    public Page<EmpresaEntity> obtenerEmpresas(Pageable pageable) {
-        return empresaRepository.findAll(pageable).map((element) -> element);
+    public List<EmpresaEntity> obtenerEmpresas() {
+        return empresaRepository.findAll();
     }
 }

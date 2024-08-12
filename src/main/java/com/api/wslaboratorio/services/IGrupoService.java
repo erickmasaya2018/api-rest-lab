@@ -3,8 +3,8 @@ package com.api.wslaboratorio.services;
 import com.api.wslaboratorio.dto.GrupoDto;
 import com.api.wslaboratorio.entities.GrupoEntity;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface IGrupoService {
     GrupoEntity crearGrupo(GrupoDto grupoDto, HttpServletRequest request);
@@ -13,8 +13,8 @@ public interface IGrupoService {
 
     String eliminarGrupo(Long id);
 
-    Iterable<GrupoEntity> obtenerGrupoPorId(Long id);
+    GrupoEntity obtenerGrupoPorId(Long id);
 
-    Page<GrupoEntity> obtenerGrupos(Pageable pageable);
+    List<GrupoEntity> obtenerGrupos();
 
 }
